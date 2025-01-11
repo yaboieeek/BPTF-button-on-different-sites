@@ -19,7 +19,7 @@ let $bpBtn = $('<button>', {class: 'btn xx'});
 $('.justify-content-sm-start').append($bpBtn);
 
 
-$bpBtn.css({width: '25%', 'margin-left': '3%', border: 'none','border-radius': 0, 'padding-top': '0', 'background-color': '#cc77cc', color: 'white'}).html('BPTF stats');
+$bpBtn.css({width: '25%', 'margin-left': '3%', border: 'none','border-radius': 0, 'padding-top': '0', 'background-color': '#cc77cc', color: 'white'}).html('BPtf stats');
 $bpBtn.on('click', function() {
     fetch(`https://backpack.tf/search?text=${getItem()}`).then(result => {return result.json()})
         .then(data => {let res = data.results[0];
