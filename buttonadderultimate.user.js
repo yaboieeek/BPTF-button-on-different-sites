@@ -23,7 +23,9 @@ $bpBtn.css({width: '25%', 'margin-left': '3%', border: 'none','border-radius': 0
 $bpBtn.on('click', function() {
     fetch(`https://backpack.tf/search?text=${getItem()}`).then(result => {return result.json()})
         .then(data => {let res = data.results[0];
-              window.open(`https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`)
+              if (!res) {alert(`Can't find ${getItem()}. If the name looks fine, the problem is on bptf side!`)} else {
+                  window.open(`https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`)
+              }
     })
 
 })
