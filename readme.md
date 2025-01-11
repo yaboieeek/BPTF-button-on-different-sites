@@ -1,4 +1,4 @@
-<h1>Skibidi dop yes yes</h1>
+
 <h2>STN button script</h2>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or that one for mozilla)</p>
