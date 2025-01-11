@@ -5,6 +5,7 @@
 // @description  it haks ur compure
 // @author       eeek
 // @match       https://mannco.store/item/440-*-unusual-*
+// @match       https://mannco.store/ru/item/440-*-unusual-*
 // @require http://code.jquery.com/jquery-latest.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=stntrading.eu
 // @grant        none
@@ -13,7 +14,7 @@
 function getItem() {
     return $('.item-info__name').text().replace('★', '').replace('Unusual', '').replace(/\s+/g, " ").trim();
 };
-console.log(getItem())
+
 let $bpBtn = $('<button>', {class: 'btn btn-sm justify-content-center'});
 
 $('.item-info__data').append($bpBtn);
