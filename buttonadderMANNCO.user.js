@@ -24,7 +24,7 @@ $bpBtn.css({'font-size': '2rem', 'background-color': '#189ab9', 'border-color': 
 $bpBtn.on('click', function() {
     fetch(`https://backpack.tf/search?text=${getItem()}`).then(result => {return result.json()})
         .then(data => {let res = data.results[0];
-              if(!res) {alert(`Can't fetch this item page because of '-'`); console.log('data is undefined')} else { console.log(`data is defined`)
+              if(res == undefined) { alert(`Can't fetch this item page because of '-'`); console.log('data is undefined')} else { console.log(`data is defined`)
               window.open(`https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`)}
     })
 
