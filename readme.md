@@ -6,7 +6,7 @@
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or that one for mozilla)</p>
 Script simply adds a BPTF button to STN unusual stat page: 
-<img src = 'https://imgur.com/PcZ7Umc.png' style = 'height: 200px'>
+<img src = 'https://imgur.com/PcZ7Umc.png' style = 'height: 20%'>
 <h2>MannCo button script</h2>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderMANNCO.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or that one for mozilla)</p>
