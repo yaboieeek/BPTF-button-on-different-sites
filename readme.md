@@ -14,4 +14,4 @@ Script adds a BPTF button to STN unusual stat page:
 Script adds a BPTF button to mannco store unusual stat page: 
 <img src = 'https://imgur.com/vqxoJ1i.png' style = 'height: 22rem'>
 <p>Now it also replaces steamcollector history button with backpack.tf item history</p>
-<img src = 'https://imgur.com/36weB8J.png'>
+<img src = 'https://imgur.com/36weB8J.png' style = 'width: 50rem'>
