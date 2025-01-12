@@ -19,11 +19,14 @@ let $bpBtn = $('<button>', {class: 'btn btn-sm justify-content-center'});
 
 $('.item-info__data').append($bpBtn);
 
-let $bpHistory = $('.table-items__actions > a').last();
-$bpHistory.text('View history on backpack.tf')
-    .attr('href', `https://backpack.tf/item/${$bpHistory.attr('href').slice($bpHistory.attr('href').lastIndexOf('/') + 1)}`);
-
-
+let $bpHistory = $('.table-items__actions > a').each(function () {
+    if($(this).text().includes('Steamcollector.com')) {
+        let $item = $(this).attr('href').slice($(this).attr('href').lastIndexOf('/')+1);
+        $(this).attr('href', `https://backpack.tf/item/${$item}`)
+            .text('View history on backpack.tf');
+    }
+})
+;
 
 
 
