@@ -22,3 +22,4 @@ Script adds a BPTF button to mannco store unusual stat page:
 <p>Now it also replaces steamcollector history button with backpack.tf item history</p>
 
 
+<h6>If you have suggestions etc contact me on discord: ee3k</h6>
