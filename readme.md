@@ -1,20 +1,20 @@
 <h1>backpack tf button on different sites</h1>
-<h2>In a nutshell</h2>
+<h4>In a nutshell</h4>
   ...it adds a button, that opens item's stat page on backpack.tf,
   <p>sometimes script may not work, because bptf search api, which my scripts rely on, is not perfect and sometimes (eg. effect or item name has "-" in it), returns no results</p>
 <img src = 'https://imgur.com/u1S7u50.png' style = 'width: 40rem'>
-<h2>STN button script</h2>
+<h3>STN button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
 Script adds a BPTF button to STN unusual stat page: 
 <img src = 'https://imgur.com/PcZ7Umc.png' style = 'width: 40rem'>
-<h2>MannCo button script</h2>
+<h3>MannCo button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderMANNCO.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
 Script adds a BPTF button to mannco store unusual stat page: 
 <img src = 'https://imgur.com/vqxoJ1i.png' style = 'width: 40rem'>
 
-<h3>Script updates:</h3>
+<h2>Script updates:</h2>
 <h4>mcsr script 12.01</h4>
 <p>Now it also replaces steamcollector history button with backpack.tf item history</p>
 <img src = 'https://imgur.com/36weB8J.png' style = 'width: 40rem'>
