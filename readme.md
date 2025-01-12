@@ -13,8 +13,10 @@ Script adds a BPTF button to STN unusual stat page:
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
 Script adds a BPTF button to mannco store unusual stat page: 
 <img src = 'https://imgur.com/vqxoJ1i.png' style = 'width: 40rem'>
+<p>...and replaces steamcollector button with bptf history button</p>: 
+<img src = 'https://imgur.com/36weB8J.png' style = 'width: 40rem'>
 
 <h2>Script updates:</h2>
 <h4>mcsr script 12.01</h4>
 <p>Now it also replaces steamcollector history button with backpack.tf item history</p>
-<img src = 'https://imgur.com/36weB8J.png' style = 'width: 40rem'>
+
