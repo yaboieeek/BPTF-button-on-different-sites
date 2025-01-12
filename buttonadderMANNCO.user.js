@@ -19,6 +19,13 @@ let $bpBtn = $('<button>', {class: 'btn btn-sm justify-content-center'});
 
 $('.item-info__data').append($bpBtn);
 
+let $bpHistory = $('.table-items__actions > a').last();
+$bpHistory.text('View history on backpack.tf')
+    .attr('href', `https://backpack.tf/item/${$bpHistory.attr('href').slice($bpHistory.attr('href').lastIndexOf('/') + 1)}`);
+
+
+
+
 
 $bpBtn.css({'font-size': '2rem', 'background-color': '#189ab9', 'border-color': '#35bddb'}).html('BPtf stats');
 $bpBtn.on('click', function() {
