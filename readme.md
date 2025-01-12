@@ -17,6 +17,8 @@ Script adds a BPTF button to mannco store unusual stat page:
 <img src = 'https://imgur.com/36weB8J.png' style = 'width: 40rem'>
 
 <h2>Script updates:</h2>
+<p>Now history replacer works for all items</p>
 <h4>mcsr script 12.01</h4>
 <p>Now it also replaces steamcollector history button with backpack.tf item history</p>
+
 
