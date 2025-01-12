@@ -33,12 +33,24 @@ if (checker()) {
 
     })
 }
+let erCount = 0;
+const refresh = setInterval(checkerr, 200);
 
-let $bpHistory = $('.table-items__actions > a').each(function () {
+function checkerr() {
+  if (erCount >= 20) {
+    clearInterval(refresh);
+    console.log(`Failed to load listings after 20 retries`);
+  }
+  if ($('.itemListPagination').text()) {
+    let $bpHistory = $('.table-items__actions > a').each(function () {
     if($(this).text().includes('Steamcollector.com')) {
         let $item = $(this).attr('href').slice($(this).attr('href').lastIndexOf('/')+1);
         $(this).attr('href', `https://backpack.tf/item/${$item}`)
             .text('View history on backpack.tf');
     }
 })
-;
+  } else {
+    erCount++;
+    console.log(erCount+1);
+  }
+}
