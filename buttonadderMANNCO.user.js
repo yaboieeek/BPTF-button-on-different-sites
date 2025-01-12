@@ -40,4 +40,5 @@ let $bpHistory = $('.table-items__actions > a').each(function () {
         $(this).attr('href', `https://backpack.tf/item/${$item}`)
             .text('View history on backpack.tf');
     }
-});
+})
+;
