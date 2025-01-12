@@ -10,6 +10,18 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=stntrading.eu
 // @grant        none
 // ==/UserScript==
+//Hopefully this will be enough
+const problematicEffects = {
+    "It's A Secret To Everybody": 46,
+    'Kill-a-Watt': 56,
+    'Terror-Watt':57
+};
+let $itemInfo = $('.item-info__name').text().replace('★', '').replace(/\s+/g, " ").split('Unusual');
+
+function getTheLink(){
+    let $url = `https://backpack.tf/stats/Unusual/${$itemInfo[1].trim()}/Tradable/Craftable/${problematicEffects[`${$itemInfo[0].trim()}`]}`;
+    return $url;
+}
 
 function getItem() {
     return $('.item-info__name').text().replace('★', '').replace('Unusual', '').replace(/\s+/g, " ").trim();
@@ -25,7 +37,7 @@ if (checker()) {
         fetch(`https://backpack.tf/search?text=${getItem()}`).then(result => {return result.json()})
             .then(data => {let res = data.results[0];
                            if (!res){
-                               alert(`Can't find ${getItem()}. If the item name looks fine, the problem is on bptf side!`)
+                               window.open(getTheLink());
                            }else{
                                window.open(`https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`)
                            }
