@@ -3,7 +3,7 @@
   <ul>What these scripts do: 
     <li>MCSR</li>
       <ul><li>adds BPTF stats button</li>
-      <li>replaces steamcollector history button with bptf history button</li></ul 
+      <li>replaces steamcollector history button with bptf history button</li></ul>
     <li>STN</li>
       <ul><li>adds BPTF stats button</li></ul>
   </ul>
