@@ -18,7 +18,7 @@ let $bpBtn = $('<button>', {class: 'btn xx'});
 
 $('.justify-content-sm-start').append($bpBtn);
 
-let $itemInfo = $('.card-title');
+let $itemInfo = $('.card-title').text();
 console.log($itemInfo);
 
 $bpBtn.css({width: '25%', 'margin-left': '3%', border: 'none','border-radius': 0, 'padding-top': '0', 'background-color': '#cc77cc', color: 'white'}).html('BPtf stats');
@@ -27,7 +27,7 @@ $bpBtn.css({width: '25%', 'margin-left': '3%', border: 'none','border-radius': 0
             .then(data => {let res = data.results[0];
                            if (!res){
                                console.info('BPTF-API-ERROR: no item found. Redirecting...');
-                               window.open(`https://google.com/search?q=${$itemInfo.join(' ').replace(/\s+/g, ' ')}`);
+                               window.open(`https://google.com/search?q=${$itemInfo.replace(/\s+/g, ' ')}`);
                            }else{
                                window.open(`https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`)
                                console.log(res.values);
