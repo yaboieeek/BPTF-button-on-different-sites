@@ -12,7 +12,7 @@ Now it redirects to google if bptf api fails
 <h3>STN button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
-Script adds a BPTF button to STN unusual stat page: 
+Script adds a BPTF button to STN unusual stat page:
 <img src = 'https://imgur.com/PcZ7Umc.png' style = 'width: 40rem'>
 <h3>MannCo button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderMANNCO.user.js'>Press to install the script</a>
