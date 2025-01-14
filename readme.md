@@ -1,8 +1,14 @@
 <h1>[WIP]backpack tf button on different sites</h1>
 <h4>In a nutshell</h4>
-  ...it adds a button, that opens item's stat page on backpack.tf,
-  <p>sometimes script may not work, because bptf search api, which my scripts rely on, is not perfect and sometimes (eg. effect or item name has "-" in it), returns no results</p>
-With 13.01 update it redirects to google if bptf api fails
+  <ul>What these scripts do: 
+    <li>MCSR</li>
+      <ul><li>adds BPTF stats button</li>
+      <li>replaces steamcollector history button with bptf history button</li></ul 
+    <li>STN</li>
+      <ul><li>adds BPTF stats button</li></ul>
+  </ul>
+  <p><s>sometimes script may not work, because bptf search api, which my scripts rely on, is not perfect and sometimes (eg. effect or item name has "-" in it), returns no results</s></p>
+Now it redirects to google if bptf api fails
 <h3>STN button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
