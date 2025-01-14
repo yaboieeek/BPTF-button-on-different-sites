@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BPTF button on stn!
 // @namespace    skibiditoilet
-// @version      2025-01-11
+// @version      2025-01-14
 // @description  it haks ur compure
 // @author       eeek
 // @match        https://stntrading.eu/item/tf2/Unusual+*
