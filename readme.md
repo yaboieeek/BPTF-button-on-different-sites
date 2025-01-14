@@ -17,6 +17,9 @@ Script adds a BPTF button to mannco store unusual stat page:
 <img src = 'https://imgur.com/36weB8J.png' style = 'width: 40rem'>
 
 <h2>Script updates:</h2>
+<h4>STN script 14.01</h4>
+<p>Added redirecting to google if the item is not found with bptf search api</p>
+<br>
 <h4>mcsr script 13.01</h4>
 <p>Added redirecting to google if the item is not found with bptf search api</p>
 <h4>mcsr script 12.01</h4>
