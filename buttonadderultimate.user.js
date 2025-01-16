@@ -78,6 +78,17 @@ $rqPrice.on('click', function (){
                         let buyStart = d.listings
                         .find(el =>
                               el.intent == 'buy' && !(el.item.attributes.some(cc => /\b1[0-9]{3}\b/.test(cc.defindex))));
+                        let $bStn = $('.text-center p.mb-0:nth-of-type(1) + p.mb-0').text();
+
+                        const regex = /(\d+)\s+keys(,\s+([\d.]+)\s+ref)?/;
+                        const match = $bStn.match(regex);
+                        let keys, ref;
+
+                        if (match) {
+                            keys = match[1]; // Количество ключей
+                            ref = match[2];   // Количество металла
+                        };
+
 
                         $rqWindow.css('display', 'none')? $rqWindow.css('display', 'block'): $rqWindow.css('display', 'none');
                         $sellCount.text('Sellers: ' + cSell);
@@ -88,6 +99,8 @@ $rqPrice.on('click', function (){
                             case 2: case 3: $sellCount.css('color', '#DD3'); break;
                             default: $sellCount.css('color', '#E55'); break;
                         }
+                        if (keys < buyStart.currencies.keys) {$('#buy').css('color', '#D55');} else {$('#buy').css('color', '#9f9'); console.log(keys, buyStart.currencies.keys)}
+
                     }
         });} else {console.log('dont spam this button pls')}
     }
