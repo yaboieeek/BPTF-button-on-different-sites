@@ -1,7 +1,6 @@
 // ==UserScript==
 // @name         BPTF button on stn!
-// @namespace    skibiditoilet
-// @version      2025-01-17
+// @version      2025-01-16
 // @description  it haks ur compure
 // @author       eeek
 // @match        https://stntrading.eu/item/tf2/Unusual+*
@@ -75,7 +74,7 @@ $rqPrice.on('click', function (){
                               e.intent == 'sell');
                         if (!sellStart) {
                             $sell.text('No listings!');
-                        } else {$sell.text(`Buy: ${sellStart.currencies.keys} keys ${sellStart.currencies.metal ? `${sellStart.currencies.metal} ref` : ''}`);}
+                        } else {$sell.text(`Buy: ${sellStart.currencies.keys? sellStart.currencies.keys + ' keys': '$' + sellStart.currencies.usd} ${sellStart.currencies.metal ? `${sellStart.currencies.metal} ref` : ''}`);}
                         let buyStart = d.listings
                         .find(el =>
                               el.intent == 'buy' && !(el.item.attributes.some(cc => /\b1[0-9]{3}\b/.test(cc.defindex))));
