@@ -15,6 +15,7 @@
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
 Script adds a few self explanatory BPTF buttons to STN unusual stat page:
 <img src = 'https://github.com/user-attachments/assets/17a9c5d5-c5a3-4c82-8f2d-39ff33197fc6'>
+<p>The best part of fetcher is that it filters those annoying spell buyers</p>
 <h3>MannCo button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderMANNCO.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
