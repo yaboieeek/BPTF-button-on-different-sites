@@ -5,14 +5,15 @@
       <ul><li>adds BPTF stats button</li>
       <li>replaces steamcollector history button with bptf history button</li></ul>
     <li>STN</li>
-      <ul><li>adds BPTF stats button</li></ul>
+      <ul><li>adds BPTF stats button</li>
+        <li>adds BPTF fetch price button</li>
+      </ul>
   </ul>
-  <p><s>sometimes script may not work, because bptf search api, which my scripts rely on, is not perfect and sometimes (eg. effect or item name has "-" in it), returns no results</s></p>
-Now it redirects to google if bptf api fails
+ 
 <h3>STN button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
-Script adds a BPTF button to STN unusual stat page:
+Script adds a few self explanatory BPTF buttons to STN unusual stat page:
 <img src = 'https://github.com/user-attachments/assets/17a9c5d5-c5a3-4c82-8f2d-39ff33197fc6'>
 <h3>MannCo button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderMANNCO.user.js'>Press to install the script</a>
