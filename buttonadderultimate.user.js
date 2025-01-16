@@ -40,15 +40,17 @@ $rqWindow.append($sellCount, $sell, $buy);
 $bpBtn.css({width: '30%', 'margin-left': '3%', border: 'none','border-radius': 0, 'padding-top': '0', 'background-color': '#cc77cc', color: 'white', 'line-height': '0.9rem'}).html('BPtf stats');
 $rqSetting.css({position: 'relative', top: '2.8rem', right: '1rem', height: '1rem'});
 $rqPrice.css({width: '30%', border: 'none', 'border-radius': 0, 'margin-left': '3%', 'padding': 0, 'background-color': '#55AA55', color: 'white', 'word-wrap': 'break-word', 'line-height':'0.9rem'}).html('Get BPTF sell/buy price');
-$rqWindow.css({width: '20rem', height: '5rem', 'background-color': 'dark-grey', position: 'related', 'z-layer': 2})
-$('.quick-price').css({'line-height': '0.6rem', color: 'rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))'});
+$rqWindow.css({width: '20rem', height: '5rem', 'background-color': 'dark-grey', position: 'absolute', 'z-layer': 2, display: 'none'})
+// $('.quick-price').css({'line-height': '0.6rem', color: 'rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))'});
 
 
 $rqSetting.hover(function (){$(this).css({color: '#ccc'})}, function () {$(this).css({color: 'white'})});
 $('.custom-one').hover(function () {$(this).css({'filter': 'brightness(85%)'})}, function () {$(this).css({'filter': 'brightness(100%)'})})
 
 
-$rqSetting.on('click', requester)
+$rqSetting.on('click', requester);
+
+
 $rqPrice.on('click', function (){
     if (!GM_getValue('userToken')) {
         requester();
@@ -64,21 +66,20 @@ $rqPrice.on('click', function (){
                 if (el.intent == 'sell') {cSell++};
             });
             let sellStart = d.listings
-            .find(e => {
-                if(e.intent =='sell') {return e.currencies};
-            });
-            console.log(sellStart)
-
+            .find(e =>
+                e.intent == 'sell');
+            if (!sellStart) {
+            $sell.text('No listings!');
+            } else {$sell.text(`${$sell.text()} ${sellStart.currencies.keys} keys ${sellStart.currencies.ref ? `${sellStart.currencies.ref} ref` : ''}`);}
             let buyStart = d.listings
-            .find(el => {
-                el.intent == 'buy'
-                && el.item.attributes.find(cc => cc.defindex == /\b1[0-9]{3}\b/)==-1;
-            });
+            .find(el =>
+                el.intent == 'buy' && !(el.item.attributes.some(cc => /\b1[0-9]{3}\b/.test(cc.defindex))));
 
-            // $sellCount.text($sellCount.text() + cSell);
-            // $sell.text($sell.text() + sellStart.currencies.keys + 'keys');
-            // $buy.text($buy.text() + buyStart.currencies.keys + 'keys')
-            // $('.quick-price').css({'color': 'white', 'font-family': 'var(--bs-body-font-family);'});
+
+            $sellCount.text($sellCount.text() + cSell);
+            $buy.text(`${$buy.text()} ${buyStart.currencies.keys} keys ${buyStart.currencies.ref ? `${buyStart.currencies.ref} ref` : ''}`);
+            $('.quick-price').css({'color': 'white', 'font-family': 'var(--bs-body-font-family);'});
+            $rqWindow.css('display', 'none')? $rqWindow.css('display', 'block'): $rqWindow.css('display', 'none');
         }
         });
     }
