@@ -30,7 +30,7 @@ Script adds a BPTF button to mannco store unusual stat page:
 
 
 <h2>Script updates:</h2>
-<h2><b>new script added</b></h2>
+<h3><b>new script added</b></h3>
 
 <h4>STN 17.01</h4>
 <p>Added good/bad price highlighting for sell prices</p>
