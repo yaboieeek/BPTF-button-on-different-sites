@@ -21,7 +21,7 @@ Script adds a few self explanatory BPTF buttons to STN unusual stat page:
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
 Script adds a BPTF button to mannco store unusual stat page: 
 <img src = 'https://imgur.com/vqxoJ1i.png' style = 'width: 40rem'>
-<p>...and replaces steamcollector button with bptf history button</p>: 
+<p>...and replaces steamcollector button with bptf history button:</p>
 <img src = 'https://imgur.com/36weB8J.png' style = 'width: 40rem'>
 <h4>Button on bptf</h4>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/MCSRbutton.user.js'>Press here to install</a>
