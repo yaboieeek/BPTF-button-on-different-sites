@@ -1,6 +1,5 @@
 <h1>[WIP]backpack tf button on different sites</h1>
-<h4>In a nutshell</h4>
-  <ul>What these scripts do: 
+<ul><h4>What these scripts do:</h4>
     <li>MCSR</li>
       <ul><li>adds BPTF stats button</li>
       <li>replaces steamcollector history button with bptf history button</li></ul>
