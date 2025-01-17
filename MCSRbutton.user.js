@@ -6,8 +6,8 @@
 // @author       eeek
 // @match        https://backpack.tf/stats/Unusual/*/Tradable/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=backpack.tf
-// @updateURL 
-// @downloadURL
+// @updateURL https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/MCSRbutton.user.js
+// @downloadURL https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/MCSRbutton.user.js
 // @grant        none
 // ==/UserScript==
 
