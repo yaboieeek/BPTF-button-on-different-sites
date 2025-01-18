@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         BPTF button on stn!
-// @version      2025-01-16
+// @version      1.1
 // @description  it haks ur compure
 // @author       eeek
 // @match        https://stntrading.eu/item/tf2/Unusual+*
@@ -78,6 +78,7 @@ $rqPrice.on('click', function (){
                         let buyStart = d.listings
                         .find(el =>
                               el.intent == 'buy' && !(el.item.attributes.some(cc => /\b1[0-9]{3}\b/.test(cc.defindex))));
+
                         let $bStn = $('.text-center p.mb-0:nth-of-type(1) + p.mb-0').text();
 
                         const regex = /(\d+)\s+keys(,\s+([\d.]+)\s+ref)?/;
@@ -85,8 +86,8 @@ $rqPrice.on('click', function (){
                         let keys, ref;
 
                         if (match) {
-                            keys = match[1]; // Количество ключей
-                            ref = match[2];   // Количество металла
+                            keys = match[1]; 
+                            ref = match[2]; 
                         };
 
 
@@ -99,7 +100,7 @@ $rqPrice.on('click', function (){
                             case 2: case 3: $sellCount.css('color', '#DD3'); break;
                             default: $sellCount.css('color', '#E55'); break;
                         }
-                        if (keys < buyStart.currencies.keys) {$('#buy').css('color', '#D55');} else {$('#buy').css('color', '#9f9'); console.log(keys, buyStart.currencies.keys)}
+                        if (keys < buyStart.currencies.keys) {$('#buy').css('color', '#9f9'); $('.text-center p.mb-0:nth-of-type(1) + p.mb-0').first().css('color', '#D55')} else {$('#buy').css('color', '#D55'); $('.text-center p.mb-0:nth-of-type(1) + p.mb-0').first().css('color', '#9f9')}
 
                     }
         });} else {console.log('dont spam this button pls')}
