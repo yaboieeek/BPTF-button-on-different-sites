@@ -30,7 +30,7 @@ Script adds a BPTF button to mannco store unusual stat page:
 
 <h2>Script updates:</h2>
 
-<h4>AdvButtons</h4>
+<h4>AdvButtons 19.01</h4>
 <p>Now script adds stn button too!</p>
 
 <h3><b>18.01 | new script added</b></h3>
