@@ -29,13 +29,15 @@ Script adds a BPTF button to mannco store unusual stat page:
 
 
 <h2>Script updates:</h2>
+<h4>STN script 19.01</h4>
+<p>Now the script highlights the best 'dump' price</p>
 
 <h4>AdvButtons 19.01</h4>
 <p>Now script adds stn button too!</p>
 
 <h3><b>18.01 | new script added</b></h3>
 
-<h4>STN 17.01</h4>
+<h4>STN script 17.01</h4>
 <p>Added good/bad price highlighting for sell prices</p>
 <p>Added a WORKING price fetcher</p>
 <h4>STN script 14.01</h4>
