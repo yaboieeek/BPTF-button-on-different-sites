@@ -7,6 +7,10 @@
       <ul><li>adds BPTF stats button</li>
         <li>adds BPTF fetch price button</li>
       </ul>
+    <li>Scrap</li>
+        <ul><li>adds item history button</li>
+        <li>adds BPTF stat page button</li>
+        </ul>
   </ul>
  
 <h3>STN button script</h3>
@@ -27,15 +31,25 @@ Script adds a BPTF button to mannco store unusual stat page:
 <p>it adds a MCSR and STN buttons on bptf page</p>
 <img src = 'https://github.com/user-attachments/assets/f06d9d17-84b6-4434-aefa-6c2d232e954a'>
 
+<h3>ScrapAuctions+</h3>
+<a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/ScrapAuctionsPlus.user.js'>Press to install the script</a>
+<p>(to use it, you need tampermonkey or greasemonkey)</p>
+<p>Script adds 2 buttons on each item that is being auctioned</p>
+First button is a history button, second button is the one that opens BPTF stat page
+<br>
+<img src = 'https://github.com/user-attachments/assets/8bd5d596-2427-41f5-8081-c7ae93245dbc'> 
 
 <h2>Script updates:</h2>
+
+<h4><b>19.01 | new script added</b></h4>
+
 <h4>STN script 19.01</h4>
 <p>Now the script highlights the best 'dump' price</p>
 
 <h4>AdvButtons 19.01</h4>
 <p>Now script adds stn button too!</p>
 
-<h3><b>18.01 | new script added</b></h3>
+<h4><b>18.01 | new script added</b></h3>
 
 <h4>STN script 17.01</h4>
 <p>Added good/bad price highlighting for sell prices</p>
