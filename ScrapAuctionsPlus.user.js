@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ScrapAuction+
 // @namespace    skibidi toilet 2025
-// @version      0.1
+// @version      0.2
 // @description  it adds cool buttons
 // @author       eeek
 // @match        https://scrap.tf/auctions*
@@ -35,11 +35,11 @@ $list.each(function () {
         const effect = effectMatch ? effectMatch[1].trim() : null;
 
         const itemName = $('<div>').html($(this).closest('div').attr('data-title')).css({display: 'none'}).text();
-        fetch(`https://backpack.tf/search?text=${effect}${itemName}`).then(result => {return result.json()})
+        fetch(`https://backpack.tf/search?text=${effect.trim()} ${itemName.trim()}`).then(result => {return result.json()})
             .then(data => {let res = data.results[0];
                            if (!res){
                                console.info('BPTF-API_ERROR: no item found. Redirecting to google...');
-                               window.open(`https://google.com/search?q=${effect || ' '} ${itemName}`);
+                               window.open(`https://google.com/search?q=${effect || ''} ${itemName}`);
                            }else{
                                let u = `https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`;
                                console.info('BPTF-API_SUCCESS: item was found! Redirecting to backpack.tf')
