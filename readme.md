@@ -40,7 +40,7 @@ First button is a history button, second button is the one that opens BPTF stat 
 <img src = 'https://github.com/user-attachments/assets/8bd5d596-2427-41f5-8081-c7ae93245dbc'> 
 
 <h2>Script updates:</h2>
-
+<h4>20.01 Small bug fixes</h4>
 <h4><b>19.01 | new script added</b></h4>
 
 <h4>STN script 19.01</h4>
