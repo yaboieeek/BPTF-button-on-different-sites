@@ -27,11 +27,7 @@ let Sinsides = $('<div>', {class: 'value'}).text('View on').css({'white-space': 
 let Sico = $('<div>', {class: 'icon'}).append($('<img>', {class: 'stm', src: 'https://www.google.com/s2/favicons?sz=64&domain=stntrading.eu'}).css({width: '40px', height: '38px', 'margin-right': 0 }).css('margin-top', '-5px'));
 let $stext = $('<div>').text('STNtrading').css({'font-weight': 'bold', position: 'relative', top: '1em', left: '-3.5em', 'white-space': 'nowrap'});
 
-$bList.append($mcBtn, $stnBtn);
+$bList.append($mcBtn || '', $stnBtn||'');
 $mcBtn.append(ico, insides, $text);
 
 $stnBtn.append(Sico, Sinsides, $stext);
-
-
-
-
