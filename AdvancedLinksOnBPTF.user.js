@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BPTF advanced links
 // @namespace    amogus
-// @version      0.1
+// @version      0.2
 // @description  mannCo and stn button on bptf
 // @author       eeek
 // @match        https://backpack.tf/stats/Unusual/*/Tradable/*
@@ -31,3 +31,7 @@ $bList.append($mcBtn || '', $stnBtn||'');
 $mcBtn.append(ico, insides, $text);
 
 $stnBtn.append(Sico, Sinsides, $stext);
+
+
+
+
