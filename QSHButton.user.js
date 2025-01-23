@@ -2,37 +2,51 @@
 // @name         QSHistoryButton!
 // @namespace    esskeit
 // @version      0.1
-// @description  try to take over the world!
+// @description  we be adding buttons
 // @author       eeek
-// @match        https://quicksell.store*
+// @match        https://quicksell.store
+// @match        https://quicksell.store/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=quicksell.store
 // @grant        none
 // ==/UserScript==
 
-var refresh = setInterval(checker, 500); // Удаляем скобки, чтобы передать функцию
+var refresh =
+    setInterval(checker, 300);//this thing checks if items were loaded
 var erCount = 0;
 
-function checker() {
-    erCount++;
+function addButton () { ///coding is lil fckd up here but again im the coder not you
+    $('.our-items div.quality-unusual').each(function() {
+        !$(this).find('button').length? $(this).append($('<button>').css({padding: 0, 'background-color': 'rgba(100, 230, 100, 0.4)', border: 'none', color: '#fff', position: 'relative', left: '17px', top: '3px', width: '1.5rem', height: '1.5rem', 'padding-bottom': '0.1rem'}).on('click', function(event){
+            window.open(`https://backpack.tf/item/${$(this).closest('div').data('assetid')}`);
+            event.stopPropagation();
+        }).append($('<i>', {class: 'fa fa-calendar'}).css({'font-weight': 200, 'font-size': '1rem', 'line-height': 0}))): null;
+    })
+};
 
+function checker() {//i mean this one checks
+    erCount ++;
     if (erCount >= 30) {
-        console.log(`Stopping refresh after 30 retries`);
+        console.log('Stopping script execution after 30 retries! Refresh the page');
         clearInterval(refresh);
-        return; // Завершаем выполнение функции
-    }
-
-    console.log(`QSButtons: We're trying`);
+        return;
+    };
 
     if ($('.our-items > .loading').css('display') === 'none') {
-        console.log('QSButtons: items were loaded');
-        let $items = $('.our-items div.quality-unusual');
-        $items.each(function () {
-            const itemID = $(this).data('assetid');
-            $(this).append($('<button>', {class: 'history-btn item-btn'}).html($('<i>', {class: 'fa fa-calendar'})).css({'font-size': '15px', width: 'min-content', 'aspect-ratio': 1, position: 'relative', right: '-25px', top: '-0.5rem',color: '#FDD', 'background-color': '#F55', 'font-weight': 400}).on('click', function(event) {
-                window.open(`https://backpack.tf/item/${itemID}`);
-                event.stopPropagation();
-            }))
-        });
         clearInterval(refresh);
+        addButton();
+
+        const nd = document.querySelector('.our-items');//this checks if items were changed or if more items were loaded
+        const cfg = {childList: true, subtree: true};
+
+        const adder = function(mut) {
+        for (const event in mut) {
+            if (event) {
+                addButton()
+            }
+        }
+        }
+        const observer = new MutationObserver(adder);
+        observer.observe(nd, cfg);
     }
 }
+
