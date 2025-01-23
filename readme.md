@@ -40,7 +40,7 @@ First button is a history button, second button is the one that opens BPTF stat 
 <img src = 'https://github.com/user-attachments/assets/8bd5d596-2427-41f5-8081-c7ae93245dbc'> 
 
 <h3>QSHistoryButton</h3>
-<a href>Press to install the script</a>
+<a href ='https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/QSHButton.user.js' >Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
 <p>Script adds BPTF history button on qsstore unusuals</p>
 <br>
