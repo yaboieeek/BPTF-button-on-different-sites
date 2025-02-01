@@ -4,7 +4,7 @@
 // @version      0.3
 // @description  mannCo and stn button on bptf
 // @author       eeek
-// @match        https://backpack.tf/stats/Unusual/*/Tradable/*
+// @match        *://*.backpack.tf/stats/Unusual/*/Tradable/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=backpack.tf
 // @updateURL https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/AdvancedLinksOnBPTF.user.js
 // @downloadURL https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/AdvancedLinksOnBPTF.user.js
