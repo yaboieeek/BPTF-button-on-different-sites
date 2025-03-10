@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name         BPTF button on stn!
-// @version      1.2
+// @version      1.4
 // @description  it haks ur compure
 // @author       eeek
 // @match        https://stntrading.eu/item/tf2/Unusual+*
-// @match https://stntrading.eu/tf2/unusuals*
 // @require http://code.jquery.com/jquery-latest.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=stntrading.eu
 // @downloadURL https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js
@@ -13,13 +12,13 @@
 // @grant GM_getValue
 // ==/UserScript==
 
-
+window.onload = function () {
 function getItem() {
     let i = $('.card-title').html();
     return i;
 };
 function requester() {!GM_getValue('userToken')?
-    GM_setValue('userToken', prompt('Please, enter your BPTF API key')): GM_setValue('userToken', prompt(`Your API key was: ${GM_getValue('userToken')}\nYou're setting the new one`) || GM_getValue('userToken'))};
+    GM_setValue('userToken', prompt('Please, enter your BPTF token. You can find it at \nbptf -> settings -> connections')): GM_setValue('userToken', prompt(`Your token was: ${GM_getValue('userToken')}\nYou're setting the new one`) || GM_getValue('userToken'))};
 //////// ^^^^^^^^ token checker, you can actually just put your token here as variable lol, just change it's content to ( return gm_setValue('userToken', 'YOUR_API_TOKEN'))
 
 ///creating a bunch of elements
@@ -31,20 +30,27 @@ let $sellCount = $('<p>', {id: 'buy-count', class: 'quick-price'});
 let $sell = $('<p>', {id: 'sell', class: 'quick-price'});
 let $buy = $('<p>', {id: 'buy', class: 'quick-price'});
 
+// selectors of those 2 stock buttons
+let $wBtn = $('.px-3').eq(1).find('#wishlist_add');
+let $rBtn = $('.px-3').eq(1).find('#request_reprice')
+
 //.....and appending them
 $('.justify-content-sm-start').append($bpBtn);
 $('.xx').after($rqPrice);
-$('.request-price').after($rqSetting);
 $('.col-12').before($rqWindow);
 $rqWindow.append($sellCount, $sell, $buy);
 ////......css stuff
 $bpBtn.css({width: '30%', 'margin-left': '3%', border: 'none','border-radius': 0, 'padding-top': '0', 'background-color': '#cc77cc', color: 'white', 'line-height': '0.9rem'}).html('BPtf stats');
-$rqSetting.css({position: 'relative', top: '2.8rem', right: '1rem', height: '1rem'});
-$rqPrice.css({width: '30%', border: 'none', 'border-radius': 0, 'margin-left': '3%', 'padding': 0, 'background-color': '#55AA55', color: 'white', 'word-wrap': 'break-word', 'line-height':'0.9rem'}).html('Get BPTF sell/buy price');
-$rqWindow.css({width: '13rem', height: 'min-content', 'line-height': '0.5em', 'background-color': '#222', position: 'absolute', 'z-layer': 10, display: 'none', 'padding-top': '0.5em', 'padding-left': '0.3em', left: '62%', 'font-weight': 'bold', 'border': '3px solid #333'})
-$rqSetting.hover(function (){$(this).css({color: '#ccc'})}, function () {$(this).css({color: 'white'})});
+$rqPrice.css({position: 'relative', width: '30%', border: 'none', 'border-radius': 0, 'margin-left': '3%', 'padding': 0, 'background-color': '#55AA55', color: 'white', 'word-wrap': 'break-word', 'line-height':'0.9rem', 'font-size': '14px'}).html(`Check BPTF orders`).append($rqSetting);
+$rqSetting.css({position: 'absolute', bottom: '0px', right: '2px'});
+$rqWindow.css({width: '13rem', height: 'min-content', 'line-height': '0.5em', 'background-color': '#222', position: 'absolute', 'z-index': 10, display: 'none', 'padding-top': '0.5em', 'padding-left': '0.3em', left: '62%', 'font-weight': 'bold', 'border': '3px solid #333'})
+// $rqSetting.hover(function (){$(this).css({color: '#ccc'})}, function () {$(this).css({color: 'white'})});
 $('.custom-one').hover(function () {$(this).css({'filter': 'brightness(85%)'})}, function () {$(this).css({'filter': 'brightness(100%)'})})
 
+let heart = $wBtn.children();
+let search = $rBtn.children()
+$wBtn.empty().append(heart)
+$rBtn.empty().append(search)
 //functions, some unnecessary things are here but lolol im coder not you
 $rqSetting.on('click', requester);
 let done = false;
@@ -63,7 +69,7 @@ $rqPrice.on('click', function (){
             fetch(bUrl).then(r => r.json()).then(d => {
                 //error handler
                 if (!d.listings && d.message) {
-                    console.info("There was an error getting listings. Check your API key. If it's correct, the problem is on bptf's side");
+                    console.info("There was an error getting listings. Check your token. If it's correct, the problem is on bptf's side");
                 } else if (!d.listings && !d.message){ console.log("BPTF API error! This item's price can not be fetched")} else {
                         d.listings.forEach(el => {
                             if (el.intent == 'sell') {cSell++};
@@ -121,13 +127,14 @@ $rqPrice.on('click', function (){
         fetch(`https://backpack.tf/search?text=${getItem()}`).then(result => {return result.json()})
             .then(data => {let res = data.results[0];
                            if (!res){
-                               console.info('BPTF-API_ERROR: no item found. Redirecting to google...');
+                               console.info('BPTF-SEARCH-API-ERROR: no item found. Redirecting to google...');
                                window.open(`https://google.com/search?q=${getItem()}`);
                            }else{
                                let u = `https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`;
-                               console.info('BPTF-API_SUCCESS: item was found! Redirecting to backpack.tf')
+                               console.info('BPTF-SEARCH-API-SUCCESS: item was found! Redirecting to backpack.tf')
                                window.open(u)
                            }
                           })
 
     })
+}
