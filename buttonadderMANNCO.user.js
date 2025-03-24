@@ -7,16 +7,10 @@
 // @match       https://mannco.store/item/440-*
 // @match       https://mannco.store/ru/item/440-*
 // @require http://code.jquery.com/jquery-latest.js
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=stntrading.eu
-// @grant        none
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=mannco.store
+// @grant        GM_xmlhttpRequest
 // ==/UserScript==
-const problematicEffects = {
-    "It's A Secret To Everybody": 46,
-    'Kill-a-Watt': 56,
-    'Terror-Watt':57,
-    'Pumpkin Moon': 201
 
-};
 let $itemInfo = $('.item-info__name').text().replace('★', '').replace('Strange', '').replace(/\s+/g, " ").split('Unusual');
 console.log($itemInfo);
 
@@ -31,17 +25,20 @@ if (checker()) {
     $('.item-info__data').append($bpBtn);
     $bpBtn.css({'font-size': '2rem', 'background-color': '#189ab9', 'border-color': '#35bddb'}).html('BPtf stats');
     $bpBtn.on('click', function() {
-        fetch(`https://backpack.tf/search?text=${getItem()}`).then(result => {return result.json()})
-            .then(data => {let res = data.results[0];
-                           if (!res){
-                               console.info('BPTF-API-ERROR: no item found. Redirecting...');
-                               window.open(`https://google.com/search?q=${$itemInfo.join(' ').replace(/\s+/g, ' ')}`);
-                           }else{
-                               window.open(`https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`)
-                               console.log(res.values);
-                           }
-                          })
-
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: `https://backpack.tf/search?text=${getItem()}`,
+            onload: function(data) {
+                let res = JSON.parse(data.responseText).results[0];
+                if (!res){
+                    console.info('BPTF-API-ERROR: no item found. Redirecting...');
+                    window.open(`https://google.com/search?q=${$itemInfo.join(' ').replace(/\s+/g, ' ')}`);
+                }else{
+                    window.open(`https://backpack.tf/stats/Unusual/${res.item_name}/Tradable/Craftable/${res.values[0].priceindex}`)
+                    console.log(res.values);
+                }
+            }
+        })
     })
 }
 let erCount = 0;
