@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         BPTF button on stn!
-// @version      1.6
+// @version      1.7
 // @description  it haks ur compure
 // @author       eeek
 // @match        https://stntrading.eu/item/tf2/Unusual+*
