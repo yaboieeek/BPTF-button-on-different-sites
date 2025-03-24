@@ -16,12 +16,14 @@
 <h3>STN button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
+<b>Allow the script to work with other sites!</b>
 Script adds a few self explanatory BPTF buttons to STN unusual stat page:
 <img src = 'https://github.com/user-attachments/assets/17a9c5d5-c5a3-4c82-8f2d-39ff33197fc6'>
 <p>The best part of fetcher is that it filters those annoying spell buyers</p>
 <h3>MannCo button script</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderMANNCO.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
+<b>Allow the script to work with other sites!</b>
 Script adds a BPTF button to mannco store unusual stat page: 
 <img src = 'https://imgur.com/vqxoJ1i.png' style = 'width: 40rem'>
 <p>...and replaces steamcollector button with bptf history button:</p>
@@ -47,6 +49,8 @@ First button is a history button, second button is the one that opens BPTF stat 
 <img src = 'https://github.com/user-attachments/assets/9c7fcb31-7da3-458a-a261-adc5805dcc5f'>
 <br>
 <h2>Script updates:</h2>
+<h4><b>24.03.2025 | Hotfixes due to some CORS stuff</b></h4>
+
 <h4><b>23.01 | new script added</b></h4>
 <h4>20.01 Small bug fixes</h4>
 <h4><b>19.01 | new script added</b></h4>
