@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         BPTF button on stn!
-// @version      1.7
+// @version      1.8b
 // @description  it haks ur compure
 // @author       eeek
 // @match        https://stntrading.eu/item/tf2/Unusual+*
@@ -11,7 +11,6 @@
 // @grant GM_setValue
 // @grant GM_getValue
 // @grant GM_xmlhttpRequest
-// @connect https://backpack.tf/*
 // ==/UserScript==
 
 function getItem() {
