@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ScrapAuction+
 // @namespace    skibidi toilet 2025
-// @version      1.1.0
+// @version      1.1.1
 // @description  it adds cool buttons
 // @author       eeek
 // @match        https://scrap.tf/auctions*
@@ -14,7 +14,7 @@
 // ==/UserScript==
 
 (function () {
-    // GM_setValue('BLOCKED_USERS', []) <------------IF YOU WANT TO WIPE THE BLOCK LIST!!!
+    GM_setValue("BLOCKED_USERS", []); //<------------IF YOU WANT TO WIPE THE BLOCK LIST!!!
     class AuctionsBlocker {
         constructor() {
             this.blockedCache = GM_getValue("BLOCKED_USERS") || [];
@@ -60,11 +60,7 @@
                 this.#processUserData(auction);
 
             const blockHandler = (userName, userId) => {
-                this.#blockUser(userId);
-                this.#removeUserListings(userId);
-                this.#showNotification(
-                    `[ScrapAuction+] ${userName} was blocked! Their auctions will be hidden`
-                );
+                this.#showConfirmationModal(userName, userId);
             };
             blockButton.addEventListener("click", () =>
                 blockHandler(userName, _userId)
@@ -75,9 +71,63 @@
             this.availableAuctions.forEach((auction) => {
                 const { userId: _userId } = this.#processUserData(auction);
                 if (_userId !== userId) return;
-                console.log(_userId, typeof _userId);
                 auction.remove();
             });
+        }
+        #showConfirmationModal(userName, userId) {
+            const confirmBlockContainer = document.createElement("div");
+            const buttonsContainer = document.createElement("div");
+            const confirmationTextContainer = document.createElement("span");
+            const confirmationHTML = `You sure want to block ${userName}?<br><b>This action can not be undone (for now)!</b>`;
+            const confirmButton = document.createElement("button");
+            const cancelButton = document.createElement("button");
+            const dimmer = document.querySelector("canvas");
+
+            dimmer.style =
+                "background-color: rgba(0,0,0, 0.5); z-index: 999 !important";
+            confirmBlockContainer.style =
+                "display: flex; flex-direction: column; position: fixed; width: 500px; height: 150px; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 9999; align-items: center; justify-content: center; border-radius: 10px; background-color: #444;";
+            buttonsContainer.style =
+                "display: flex; flex-direction: row; gap: 5%; justify-content: center";
+            confirmButton.style =
+                "border: none; background-color: red; color: white; font-weight: 600";
+            cancelButton.style =
+                "border: 2px solid #555; background-color: transparent; color: #666;";
+
+            confirmButton.innerText = "Block!";
+            cancelButton.innerText = "Cancel";
+
+            confirmBlockContainer.append(
+                confirmationTextContainer,
+                buttonsContainer
+            );
+            buttonsContainer.append(confirmButton, cancelButton);
+            confirmationTextContainer.innerHTML = confirmationHTML;
+            document
+                .querySelector("#pid-auctions")
+                .prepend(confirmBlockContainer);
+
+            const handleConfirmClick = () => {
+                this.#blockUser(userId);
+                this.#removeUserListings(userId);
+                this.#showNotification(
+                    `[ScrapAuction+] ${userName} was blocked! Their auctions will be hidden`
+                );
+                removeModal();
+            };
+            const handleCancelClick = () => {
+                removeModal();
+            };
+
+            function removeModal() {
+                dimmer.style = "";
+                confirmBlockContainer.remove();
+                confirmButton.removeEventListener("click", handleConfirmClick);
+                cancelButton.removeEventListener("click", handleCancelClick);
+            }
+
+            confirmButton.addEventListener("click", handleConfirmClick);
+            cancelButton.addEventListener("click", handleCancelClick);
         }
         #blockUser(userId) {
             if (this.blockedCache.includes(userId)) return;
