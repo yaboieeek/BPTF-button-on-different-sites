@@ -14,7 +14,7 @@
 // ==/UserScript==
 
 (function () {
-    GM_setValue("BLOCKED_USERS", []); //<------------IF YOU WANT TO WIPE THE BLOCK LIST!!!
+    //GM_setValue("BLOCKED_USERS", []); //<------------IF YOU WANT TO WIPE THE BLOCK LIST!!!
     class AuctionsBlocker {
         constructor() {
             this.blockedCache = GM_getValue("BLOCKED_USERS") || [];
