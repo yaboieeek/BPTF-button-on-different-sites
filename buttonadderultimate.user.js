@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         BPTF button on stn!
-// @version      1.8b
+// @namespace https://steamcommunity.com/profiles/76561198967088046    
+// @version      1.8.1
 // @description  it haks ur compure
 // @author       eeek
 // @match        https://stntrading.eu/item/tf2/Unusual+*
