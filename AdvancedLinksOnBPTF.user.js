@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BPTF advanced links
-// @namespace    amogus
-// @version      0.3
+// @namespace    https://steamcommunity.com/profiles/76561198967088046
+// @version      0.3.1
 // @description  mannCo and stn button on bptf
 // @author       eeek
 // @match        *://*.backpack.tf/stats/Unusual/*/Tradable/*
