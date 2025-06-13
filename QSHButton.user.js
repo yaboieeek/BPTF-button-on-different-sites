@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         QSHistoryButton!
-// @namespace    esskeit
-// @version      0.1
+// @namespace    https://steamcommunity.com/profiles/76561198967088046
+// @version      0.1.1
 // @description  we be adding buttons
 // @author       eeek
 // @match        https://quicksell.store
