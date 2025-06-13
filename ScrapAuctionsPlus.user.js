@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ScrapAuction+
-// @namespace    skibidi toilet 2025
-// @version      1.1.1
+// @namespace    https://steamcommunity.com/profiles/76561198967088046
+// @version      1.1.2
 // @description  it adds cool buttons
 // @author       eeek
 // @match        https://scrap.tf/auctions*
