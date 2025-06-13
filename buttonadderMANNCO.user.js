@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BPTF button on mannco.store!
-// @namespace    skibiditoilet
-// @version      2025-01-11
+// @namespace    https://steamcommunity.com/profiles/76561198967088046
+// @version      1.0.0
 // @description  it haks ur compure
 // @author       eeek
 // @match       https://mannco.store/item/440-*
