@@ -33,7 +33,7 @@ Script adds a BPTF button to mannco store unusual stat page:
 <p>it adds a MCSR and STN buttons on bptf page</p>
 <img src = 'https://github.com/user-attachments/assets/f06d9d17-84b6-4434-aefa-6c2d232e954a'>
 
-<h3>ScrapAuctions+</h3>
+<h3>ScrapAuction+</h3>
 <a href = 'https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/ScrapAuctionsPlus.user.js'>Press to install the script</a>
 <p>(to use it, you need tampermonkey or greasemonkey)</p>
 <p>Script adds 2 buttons on each item that is being auctioned</p>
@@ -49,7 +49,8 @@ First button is a history button, second button is the one that opens BPTF stat 
 <img src = 'https://github.com/user-attachments/assets/9c7fcb31-7da3-458a-a261-adc5805dcc5f'>
 <br>
 <h2>Script updates:</h2>
-<h4><b>24.03.2025 | Hotfixes due to some CORS stuff</b></h4>
+<h4><b>05.06 | Added block feature to ScrapAuction+</b></h4> 
+<h4><b>24.03 | Hotfixes due to some CORS stuff</b></h4>
 
 <h4><b>23.01 | new script added</b></h4>
 <h4>20.01 Small bug fixes</h4>
