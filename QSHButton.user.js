@@ -1,52 +1,192 @@
 // ==UserScript==
-// @name         QSHistoryButton!
+// @name         QSStoreClickableUnusuals 
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
-// @version      0.1.1
-// @description  we be adding buttons
+// @version      1.0.0
+// @description  makes unusual items clickable for further redirection to it's backpack.tf page
 // @author       eeek
-// @match        https://quicksell.store
-// @match        https://quicksell.store/*
+// @match        https://quicksell.store/trade
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=quicksell.store
-// @grant        none
+// @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-var refresh =
-    setInterval(checker, 300);//this thing checks if items were loaded
-var erCount = 0;
+const DEBUG_ENABLED = false;
 
-function addButton () { ///coding is lil fckd up here but again im the coder not you
-    $('.our-items div.quality-unusual').each(function() {
-        !$(this).find('button').length? $(this).append($('<button>').css({padding: 0, 'background-color': 'rgba(100, 230, 100, 0.4)', border: 'none', color: '#fff', position: 'relative', left: '17px', top: '3px', width: '1.5rem', height: '1.5rem', 'padding-bottom': '0.1rem'}).on('click', function(event){
-            window.open(`https://backpack.tf/item/${$(this).closest('div').data('assetid')}`);
-            event.stopPropagation();
-        }).append($('<i>', {class: 'fa fa-calendar'}).css({'font-weight': 200, 'font-size': '1rem', 'line-height': 0}))): null;
-    })
+const debug = {
+    log: (...args) => DEBUG_ENABLED && console.log(...args),
+    error: (...args) => DEBUG_ENABLED && console.log(...args),
+    warning: (...args) => DEBUG_ENABLED && console.log(...args),
 };
 
-function checker() {//i mean this one checks
-    erCount ++;
-    if (erCount >= 30) {
-        console.log('Stopping script execution after 30 retries! Refresh the page');
-        clearInterval(refresh);
-        return;
-    };
-
-    if ($('.our-items > .loading').css('display') === 'none') {
-        clearInterval(refresh);
-        addButton();
-
-        const nd = document.querySelector('.our-items');//this checks if items were changed or if more items were loaded
-        const cfg = {childList: true, subtree: true};
-
-        const adder = function(mut) {
-        for (const event in mut) {
-            if (event) {
-                addButton()
-            }
-        }
-        }
-        const observer = new MutationObserver(adder);
-        observer.observe(nd, cfg);
+class Selectors {
+    static CLASSES = {
+        ITEMSCONTAINER: '.itemsContainer',
+        ITEM: '._9oGESyv8.xzQUSN5i:not(._4kxlAHX-)',
+        ITEMNAME:'.I0WfanFh',
+        ITEMEFFECTIMG: '.OCMKyHlh',
+        ITEMQUALITYSTRIP: '._3IvoXosk',
+        OVERLAY: '.-RpjD12n'
     }
 }
+
+class ItemDataParser {
+    constructor(itemHTMLElement) {
+        this.element = itemHTMLElement;
+    }
+
+    get name () {
+        debug.log(this.full_name, this.effectName);
+        return this.full_name.replace(this.effectName, '').trim()
+    }
+
+    get full_name() {
+        return this.element.querySelector(Selectors.CLASSES.ITEMNAME).textContent
+    }
+
+    get isUnusual() {
+        return this.element.querySelector(Selectors.CLASSES.ITEMQUALITYSTRIP).classList.contains('mWVjcSoo');
+    }
+
+    get effectName() {
+        if (!this.isUnusual) return;
+        const regex = `https:\/\/quicksell\.store\/images\/particles\/(.*)_medium\.webp`;
+        const match = this.element.querySelector(Selectors.CLASSES.ITEMEFFECTIMG).src.match(regex);
+        debug.log(match);
+        if (match) return match[1].replace(/%20/g, ' ');
+
+        return '';
+    }
+}
+
+class ItemModel {
+    constructor(name, full_name, isUnusual) {
+        this.name = name;
+        this.full_name = full_name;
+        this.isUnusual = isUnusual;
+    }
+}
+
+class ApiService {
+    constructor() {
+        this.baseURL = `https://backpack.tf/search?text=`
+    }
+
+    async fetchItemPriceIndex(itemName) {
+        debug.log('Attempting to fetch ' + itemName);
+        try {
+            const response = await this.#getResponse(itemName);
+            if (response.results.length === 0) throw (response);
+            debug.log(response.results[0])
+            const priceIndex = response.results[0].values[0].priceindex;
+            return priceIndex;
+        } catch(e) {
+            debug.log(e);
+            debug.log('Error getting data for ' + itemName + '!');
+            return 0;
+        }
+    }
+
+    async #getResponse(itemName) {
+        return new Promise((resolve, reject) => this.#fetch(itemName, resolve, reject));
+    }
+
+    async #fetch(itemName, resolver, rejector) {
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: this.baseURL + itemName,
+            responseType: 'json',
+            onload: (res) => resolver(res.response),
+            onerror: (e) => rejector(e)
+        })
+    }
+}
+
+class ButtonsManager{
+    constructor(element, itemModel, apiService) {
+        this.element = element;
+        this.itemModel = itemModel;
+        this.apiService = apiService;
+    }
+
+    addButtons() {
+        this.#makeListingClickable();
+    }
+
+    #makeListingClickable() {
+        this.element.addEventListener('click', (e) => this.#bpButtonAction(e));
+    }
+
+    #bpButtonAction(event) {
+        if (!event.ctrlKey || !this.itemModel.isUnusual) return;
+        event.stopPropagation();
+
+        this.apiService.fetchItemPriceIndex(this.itemModel.full_name).then((res) => {
+            URLManager.openNewWindow(this.itemModel, res);
+        });
+    }
+}
+
+class App {
+
+    init() {
+        this.#observeMutations();
+    };
+
+    #observeMutations() {
+        const pageLoadObserver = new MutationObserver((mutations, obs) => {
+            if (!document.querySelector(Selectors.CLASSES.OVERLAY)) {
+                debug.log('Page loaded successfully!');
+                obs.disconnect();
+                this.#observeItemsContainer()
+            }
+        });
+
+        pageLoadObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        })
+    }
+
+    #observeItemsContainer() {
+        const itemsObserver = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.removedNodes.length > 0) continue;
+
+                const element = mutation.addedNodes[0];
+                this.#processTheElement(element);
+            }
+        })
+
+        itemsObserver.observe(document.querySelectorAll(Selectors.CLASSES.ITEMSCONTAINER)[1], {
+            childList: true,
+            subtree: true
+        })
+    }
+
+    #processTheElement(element) {
+        const parser = new ItemDataParser(element);
+        const itemModel = new ItemModel(
+            parser.name,
+            parser.full_name,
+            parser.isUnusual
+        );
+        debug.log(parser);
+        const apiService = new ApiService();
+        const buttonsManager = new ButtonsManager(element, itemModel, apiService);
+        debug.log(buttonsManager);
+        buttonsManager.addButtons();
+    }
+}
+
+class URLManager {
+    static openNewWindow(itemModel, priceIndex) {
+        if (priceIndex === 0) {
+            window.open(`https://google.com/search?q=${itemModel.full_name}`);
+            return;
+        };
+        const bpLink = `https://backpack.tf/stats/Unusual/${itemModel.name}/Tradable/Craftable/${priceIndex}`;
+        debug.log(bpLink);
+        window.open(bpLink)
+    }
+}
+new App().init()
 
