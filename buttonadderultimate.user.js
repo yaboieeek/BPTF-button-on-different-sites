@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.0
+// @version      2.0.1
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -85,7 +85,9 @@ class ListingManager {
         this.effect = document.querySelector('.card-text.m-0').innerText.match(/★ Unusual Effect: (.*)/)[1].trim(); // get the effect name from the effect name on the page
         this.itemName = itemData.itemName.replace(`Unusual ${this.effect}`, '').trim(); // yuh it be like that
         this.priceIndex = document.querySelectorAll('.col-sm-4 picture')[1].querySelector('img').getAttribute('src').match(/particles\/(.*)@4x\.png$/)[1];
-        this.stockButtons = [...document.querySelector('.col-lg-6.p-sm-0').querySelector('.px-3').children];
+        this.stockButtons = [
+            ...document.querySelector('.col-lg-6.p-sm-0').querySelector('.px-3').children
+        ];
         this.getStnPrices();
         this._cleanField();
         this.createListingsField() ;/// clean the field for custom
@@ -115,7 +117,7 @@ class ListingManager {
 
 
         const bpOrdersHeader = document.createElement('p');
-        bpOrdersHeader.innerText = 'Backpack.tf orders';
+        bpOrdersHeader.innerText = 'Backpack.tf:';
         bpOrdersHeader.className = 'bptf-orders';
 
         listingsUniteContainer.append(uniteHeaders, this.createSellBuyContainer(true),bpOrdersHeader, this.createSellBuyContainer());
@@ -139,7 +141,7 @@ class ListingManager {
     get buttons() { /// because they look mad ugly smh so we rework them
         const bptfButton = document.createElement('a');
         bptfButton.className = 'backpack-tf-btn btn';
-        bptfButton.href = `https://backpack.tf/stats/Unusual/${this.itemName}/Tradable/Craftable/${this.priceIndex}`;
+        bptfButton.href = `https://backpack.tf/stats/Unusual/${this.itemName.replace(/%/, '%25')}/Tradable/Craftable/${this.priceIndex}`; // guess why 25??? because fukass encoder aint doing shit to '%'
         bptfButton.target = `blank`;
 
         const viewonContainer = document.createElement('div');
@@ -225,9 +227,9 @@ class ListingManager {
     }
 
     async renderBackpackListings() {
-        [...this.pointers[1].children].forEach(child => child.classList.remove('listing-loading'));
         try {
             const prices = await this.getBackpackListings();
+             [...this.pointers[1].children].forEach(child => child.classList.remove('listing-loading'));
             this._createListing(this.pointers[1], prices);
 
             (this.otherSellers !== 0) && this.pointers[1].parentElement.parentElement.append(this._createOtherSellersInfoElement());
