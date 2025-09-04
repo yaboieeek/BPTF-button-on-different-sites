@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.1.1
+// @version      2.1.2
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -378,6 +378,9 @@ GM_addStyle(`
         height: 80px;
         display: flex;
         align-items: center
+    }
+    .bptf-orders{
+        width:max-content
     }
     .unite-container {
         margin-top: 1em;
