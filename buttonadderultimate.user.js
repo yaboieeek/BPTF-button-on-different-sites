@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.1
+// @version      2.1.1
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -14,7 +14,6 @@
 // @grant GM_xmlhttpRequest
 // @grant GM_addStyle
 // ==/UserScript==
-
 
 class Config {
     static cache = {
@@ -207,7 +206,7 @@ class ListingManager {
                 console.log(!itemInCache.failed);
                 const header = document.querySelector('.bptf-orders');
                 const timeleft = this.cache.convertTTLtoMinutes(itemInCache.timestamp);
-
+                this.otherSellers = itemInCache.otherSellersCount;
                 header.innerText = `${header.innerText} 🔄 ${timeleft} minutes`;
                 header.title = `Cached data. Will expire in ${timeleft} minutes`;
                 resolve(this.cache.getPriceData(itemInCache));
@@ -235,7 +234,7 @@ class ListingManager {
                             sell: {keys: sellListings[0]?.keys?? 0, metal: sellListings[0]?.metal?? 0},
                             buy: {keys: buyListings[0]?.keys?? 0, metal: buyListings[0]?.metal?? 0}
                         };
-                        this.cache.addNewCacheElement($itemName, finalizedData);
+                        this.cache.addNewCacheElement($itemName, finalizedData, this.otherSellers);
                         resolve(finalizedData);
                     } catch (msg) {
                         console.log('[ERROR] ' + msg);
@@ -254,7 +253,7 @@ class ListingManager {
              [...this.pointers[1].children].forEach(child => child.classList.remove('listing-loading'));
             this._createListing(this.pointers[1], prices);
 
-            (this.otherSellers !== 0) && this.pointers[1].parentElement.parentElement.append(this._createOtherSellersInfoElement());
+            (this.otherSellers > 1) && this.pointers[1].parentElement.parentElement.append(this._createOtherSellersInfoElement());
         } catch (e) {
             [...this.pointers[1].children].forEach(child => child.classList.add('listing-failed'));
             document.querySelector('.bptf-orders').innerText = 'Backpack.tf orders failed to load. Try again later';
@@ -318,7 +317,7 @@ class ListingsDataCache {
         }
     }
 
-    addNewCacheElement(itemName, {sell, buy}) {
+    addNewCacheElement(itemName, {sell, buy}, otherSellersCount = 0) {
         const timestamp = this.#getCurrentTime();
         if (buy.keys === buy.metal === sell.keys === sell.metal) return;
 
@@ -328,7 +327,8 @@ class ListingsDataCache {
                 sell: {keys: sell.keys, metal: sell.metal},
                 buy: {keys: buy.keys, metal: buy.metal}
             },
-            timestamp
+            timestamp,
+            otherSellersCount
         }
 
         const currentCache = GM_getValue('ListingsData', []);
