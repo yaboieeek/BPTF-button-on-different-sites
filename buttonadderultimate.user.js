@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.0.1
+// @version      2.1
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -12,15 +12,15 @@
 // @grant GM_setValue
 // @grant GM_getValue
 // @grant GM_xmlhttpRequest
+// @grant GM_addStyle
 // ==/UserScript==
 
-// function requester() {
-//     !GM_getValue('userToken') ?
-//         GM_setValue('userToken', prompt('Please, enter your BPTF token. You can find it at bptf -> settings -> connections')) :
-//     GM_setValue('userToken', prompt(`Your token was: ${GM_getValue('userToken')}\nYou're setting the new one`) || GM_getValue('userToken'))
-// };
 
-
+class Config {
+    static cache = {
+        timeToLiveInHours: 0.5 // 0.5 = 30 min and so on
+    }
+}
 class Listing {
     static createListing(prices, intent, stn = false) {
         const [listingContainer, priceContainer, keysContainer, refContainer] = [document.createElement('div'), document.createElement('div'),document.createElement('div'), document.createElement('div')];
@@ -80,8 +80,9 @@ class ListingManager {
     stockButtons;
     pointers = []; /// we will create pointers to listing containers and append listings to them
     otherSellers = 0;
-    constructor() {
+    constructor(cache) {
         ///we need these to use the price endpoint
+        this.cache = cache;
         this.effect = document.querySelector('.card-text.m-0').innerText.match(/★ Unusual Effect: (.*)/)[1].trim(); // get the effect name from the effect name on the page
         this.itemName = itemData.itemName.replace(`Unusual ${this.effect}`, '').trim(); // yuh it be like that
         this.priceIndex = document.querySelectorAll('.col-sm-4 picture')[1].querySelector('img').getAttribute('src').match(/particles\/(.*)@4x\.png$/)[1];
@@ -183,30 +184,43 @@ class ListingManager {
         const stnSellPrice = stnSellElement.querySelector('b');
 
         const regex = /(\d+) key(s)?(:?, (\d+|\d+\.\d+) ref)?/;
-        this.stnPrices = [
-            {
+        this.stnPrices = {
+            sell: {
                 available: stnSellElement.querySelector('.text-success') ? 1: 0,
                 keys: stnSellPrice.innerText.match(regex)[1] !== undefined? stnSellPrice.innerText.match(regex)[1]: 0,
                 metal: stnSellPrice.innerText.match(regex)[4] !== undefined? stnSellPrice.innerText.match(regex)[4]: 0
             },
-            {
+            buy: {
                 available: stnBuyElement.querySelector('.text-success') ? 1: 0,
                 keys: stnBuyPrice.innerText.match(regex)[1] !== undefined? stnBuyPrice.innerText.match(regex)[1]: 0,
                 metal: stnBuyPrice.innerText.match(regex)[4] !== undefined? stnBuyPrice.innerText.match(regex)[4]: 0
             }
-        ];
+        }
 
     }
 
     getBackpackListings() {
+        const $itemName = itemData.itemName.replace('Unusual ', '');
         return new Promise((resolve, reject) => {
+            const itemInCache = this.cache.lookForName($itemName);
+            if (!itemInCache.failed) {
+                console.log(!itemInCache.failed);
+                const header = document.querySelector('.bptf-orders');
+                const timeleft = this.cache.convertTTLtoMinutes(itemInCache.timestamp);
+
+                header.innerText = `${header.innerText} 🔄 ${timeleft} minutes`;
+                header.title = `Cached data. Will expire in ${timeleft} minutes`;
+                resolve(this.cache.getPriceData(itemInCache));
+            } else {
+
             GM_xmlhttpRequest({
                 method: 'GET',
-                url: `https://backpack.tf/api/classifieds/listings/snapshot?sku=${encodeURIComponent(itemData.itemName.replace('Unusual ', ''))}&appid=440`,
+                url: `https://backpack.tf/api/classifieds/listings/snapshot?sku=${encodeURIComponent($itemName)}&appid=440`,
                 responseType: 'json',
 
                 onload: (res) => {
                     try {
+                        console.log('Making an API request for ' + $itemName)
                         if (res.response.message) {
                             throw (res.response.message);
                         }
@@ -215,14 +229,22 @@ class ListingManager {
                             listings.filter(listing => (listing.intent === 'sell')).map(listing => listing.currencies),
                             listings.filter(listing => (listing.intent === 'buy') && !(listing.item.attributes.some(attr => +attr.defindex > 1000))).map(listing => listing.currencies),
                         ];
+
                         if (sellListings.length > 1) this.otherSellers = sellListings.length;
-                        resolve([sellListings[0] || {keys: 0, metal: 0}, buyListings[0] || {keys: 0, metal: 0}])
+                        const finalizedData = {
+                            sell: {keys: sellListings[0]?.keys?? 0, metal: sellListings[0]?.metal?? 0},
+                            buy: {keys: buyListings[0]?.keys?? 0, metal: buyListings[0]?.metal?? 0}
+                        };
+                        this.cache.addNewCacheElement($itemName, finalizedData);
+                        resolve(finalizedData);
                     } catch (msg) {
-                        reject(msg);
+                        console.log('[ERROR] ' + msg);
+                        reject();
                     }
                 },
-                onerror: () => reject(null),
+                onerror: (err) => reject(err),
             })
+            }
         })
     }
 
@@ -243,8 +265,8 @@ class ListingManager {
         document.querySelectorAll('.row.g-0')[1].remove(); /// removing stock field with buttons etc
     }
 
-    _createListing(pointer, [sell, buy], stn = false) {
-        console.log(pointer, [sell, buy], stn);
+    _createListing(pointer, {sell, buy}, stn = false) {
+        console.log({sell, buy}, stn)
         pointer.children[0].append(Listing.createListing(sell, 'sell', stn))
         pointer.children[1].append(Listing.createListing(buy, 'buy', stn))
     }
@@ -265,11 +287,91 @@ class ListingManager {
     }
 }
 
-new ListingManager()
+// sometimes i feel like checking twice and hitting the limit again and again is quite annoying
+class ListingsDataCache {
+    constructor() {
+        this.init()
+    }
+    init() {
+        this.#removeOutdated();
+    }
+    lookForName($itemName) {
+        const currentCache = GM_getValue('ListingsData', []);
+        const elementExists = currentCache.some(cacheElement => cacheElement.itemName === $itemName);
+        if (currentCache.lenght === 0 || !elementExists) return {failed: true};
 
-const styles = document.createElement('style');
+        const itemInCache = currentCache.find(({itemName}) => itemName === $itemName);
+        return itemInCache;
+    }
 
-styles.innerHTML = `
+    getPriceData(cacheElement) {
+        console.log(cacheElement)
+        return {
+            buy: {
+                keys: cacheElement.prices.buy.keys,
+                metal: cacheElement.prices.buy.metal
+            },
+            sell: {
+                keys: cacheElement.prices.sell.keys,
+                metal: cacheElement.prices.sell.metal
+            }
+        }
+    }
+
+    addNewCacheElement(itemName, {sell, buy}) {
+        const timestamp = this.#getCurrentTime();
+        if (buy.keys === buy.metal === sell.keys === sell.metal) return;
+
+        const elementToAdd = {
+            itemName,
+            prices: {
+                sell: {keys: sell.keys, metal: sell.metal},
+                buy: {keys: buy.keys, metal: buy.metal}
+            },
+            timestamp
+        }
+
+        const currentCache = GM_getValue('ListingsData', []);
+        currentCache.push(elementToAdd);
+
+        this.#updateCache(currentCache);
+    }
+
+    convertTTLtoMinutes(timestamp) {
+        const currentTime = Number(this.#getCurrentTime());
+        const diff = timestamp + this.timeToLive - currentTime;
+        return Math.round(diff / 60);
+    }
+    #updateCache(newCache) {
+        GM_setValue('ListingsData', newCache)
+    }
+
+
+
+    #removeOutdated() {
+        this.timeToLive = Config.cache.timeToLiveInHours * 3600;
+        const currentCache = GM_getValue('ListingsData', []);
+        if (currentCache.length === 0) return;
+
+        const TTL = Config.cache.timeToLiveInHours * 3600;
+        const currentTime = this.#getCurrentTime();
+
+        const threshold = currentTime - TTL;
+        const freshDataArray = currentCache.filter(({timestamp}) => threshold < timestamp);
+
+        this.#updateCache(freshDataArray);
+    }
+
+    #getCurrentTime() {
+        return Math.floor(Date.now() / 1000);
+    }
+
+}
+
+const cache = new ListingsDataCache();
+new ListingManager(cache)
+
+GM_addStyle(`
     .buttons-container {
         width: 50%;
         min-width: 360px;
@@ -423,5 +525,4 @@ styles.innerHTML = `
         }
     }
 
-    ` //// im new to animations ngl but lol that looks nice
-document.head.append(styles)
+    `)
