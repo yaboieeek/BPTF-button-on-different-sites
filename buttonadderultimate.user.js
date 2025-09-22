@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.1.2
+// @version      2.1.3
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -88,6 +88,8 @@ class ListingManager {
         this.stockButtons = [
             ...document.querySelector('.col-lg-6.p-sm-0').querySelector('.px-3').children
         ];
+        this.stnInventory = document.querySelector('.tfip-pg-bx-wrap').getAttribute('onclick');
+
         this.getStnPrices();
         this._cleanField();
         this.createListingsField() ;/// clean the field for custom
@@ -156,6 +158,25 @@ class ListingManager {
         siteName.className = 'site-name';
 
         bptfButton.append(viewonContainer);
+
+        const botInvButton = document.createElement('button');
+        botInvButton.className = 'rounded-1 stock'
+        const steamIcon = document.createElement('i');
+        steamIcon.className = 'fab fa-steam-symbol fontawesome-icon';
+        botInvButton.setAttribute('onclick', this.stnInventory);
+        botInvButton.append(steamIcon);
+
+        Object.assign(steamIcon.style, {
+            'font-size': '2em',
+            color: 'white'
+        })
+        Object.assign(botInvButton.style, {
+            'background': 'var(--bs-primary)',
+            'border': 'none'
+        })
+
+
+
         this.stockButtons.forEach(button => {button.innerText = ''; button.classList.add('stock', 'rounded-1'); button.classList.remove('ms-sm-3', 'rounded-0');});
 
         /////add stock symbols back
@@ -169,7 +190,7 @@ class ListingManager {
 
         ///make a fancy container for buttons
         const stockContainer = document.createElement('div');
-        stockContainer.append(...this.stockButtons)
+        stockContainer.append(...this.stockButtons, botInvButton)
         stockContainer.className = 'stock-buttons-container';
 
         ///returning a nice elements array
@@ -353,10 +374,9 @@ class ListingsDataCache {
         const currentCache = GM_getValue('ListingsData', []);
         if (currentCache.length === 0) return;
 
-        const TTL = Config.cache.timeToLiveInHours * 3600;
         const currentTime = this.#getCurrentTime();
 
-        const threshold = currentTime - TTL;
+        const threshold = currentTime - this.timeToLive;
         const freshDataArray = currentCache.filter(({timestamp}) => threshold < timestamp);
 
         this.#updateCache(freshDataArray);
@@ -527,5 +547,7 @@ GM_addStyle(`
             background-position: 0%;
         }
     }
-
+    .stock:has(.fa-steam-symbol):hover {
+        filter: brightness(0.9)
+    }
     `)
