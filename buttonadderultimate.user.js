@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.1.4
+// @version      2.2
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -19,8 +19,104 @@ class Config {
     static cache = {
         timeToLiveInHours: 0.5 // 0.5 = 30 min and so on
     }
+    static defaultKeyPrice = 1.8 //$ per key used for conversion
+    static defaultKeyPriceFetchInterval = 12 * 60 * 1000 // every 12 hours
+}
+
+class MarketplaceKeyPriceController {
+    constructor() {
+        this.keyPrice = GM_getValue('keyPrice', Config.defaultKeyPrice);
+        console.log(`Initialized key price @${this.keyPrice}`)
+        this.init();
+    }
+
+    init() {
+        const lastFetched = GM_getValue('lastFetched');
+        const timeNow = Math.floor(Date.now() / 1000);
+
+        const fetchInterval = Config.defaultKeyPriceFetchInterval ;
+        if (lastFetched === undefined || (lastFetched + fetchInterval <= timeNow)) {
+            this.updateKeyPrice().then(newPrice => {
+                if (newPrice !== undefined) {
+                    this.keyPrice = newPrice;
+                    GM_setValue('keyPrice', newPrice);
+                }
+            }).catch(error => {
+                console.error('Failed to update key price:', error);
+            });
+        }
+
+        GM_setValue('lastFetched', timeNow);
+    }
+
+    async updateKeyPrice() {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: `https://backpack.tf/item/get_third_party_prices/Unique/Mann%20Co.%20Supply%20Crate%20Key/Tradable/Craftable`,
+                responseType: 'json',
+
+                onload: (res) => {
+                    try {
+                        console.log('Making an API request for key price');
+                        const response = res.response;
+
+                        if (response.message) {
+                            throw new Error(response.message);
+                        }
+
+                        const keyPrice = response.prices?.mp?.lowest_price ?? null;
+
+                        if (keyPrice === null) {
+                            console.warn('Key price not found in response, using default');
+                            resolve(Config.defaultKeyPrice);
+                            return;
+                        }
+
+                        const numericPrice = Number(keyPrice.replace('$', ''));
+
+                        if (isNaN(numericPrice)) {
+                            console.warn('Invalid key price format, using default');
+                            resolve(Config.defaultKeyPrice);
+                            return;
+                        }
+
+                        resolve(numericPrice);
+                    } catch (error) {
+                        console.error('[ERROR] Failed to parse key price:', error);
+                        resolve(Config.defaultKeyPrice);
+                    }
+                },
+
+                onerror: (err) => {
+                    console.error('[ERROR] Network error fetching key price:', err);
+                    resolve(Config.defaultKeyPrice);
+                },
+
+                ontimeout: () => {
+                    console.error('[ERROR] Request timeout fetching key price');
+                    resolve(Config.defaultKeyPrice);
+                }
+            });
+        });
+    }
+
+    getKeyPrice() {
+        return this.keyPrice;
+    }
+
+    async refreshKeyPrice() {
+        const newPrice = await this.updateKeyPrice();
+        if (newPrice !== undefined) {
+            this.keyPrice = newPrice;
+            GM_setValue('keyPrice', newPrice);
+            GM_setValue('lastFetched', Math.floor(Date.now() / 1000));
+        }
+        return newPrice;
+    }
 }
 class Listing {
+
     static createListing(prices, intent, stn = false) {
         const [listingContainer, priceContainer, keysContainer, refContainer] = [document.createElement('div'), document.createElement('div'),document.createElement('div'), document.createElement('div')];
         const {keys = 0, metal = 0, usd = 0} = prices;
@@ -30,12 +126,13 @@ class Listing {
         refContainer.className = 'metal';
         keysContainer.innerText = keys + ' keys';
         refContainer.innerText = metal + ' ref';
-        if ((keys === 0) && (metal === 0) && (!usd)) {
+        if ((keys === 0) && (metal === 0) && (usd === 0)) {
             keysContainer.innerText = `No ${intent === 'sell' ? 'sellers' : 'buyers'}!`;
             refContainer.innerText = '';
-        } else if (usd) {
+        } else if (usd !== 0) {
             keysContainer.innerText = `$${usd}`;
-            refContainer.innerText = '';
+            const convertedPrice = Math.floor(usd / GM_getValue('keyPrice', Config.defaultKeyPrice) * 100) / 100;
+            refContainer.innerText = `~${convertedPrice} keys`;
             keysContainer.style.color = '#55cc44'
         }
         priceContainer.append(keysContainer, refContainer);
@@ -174,7 +271,7 @@ class ListingManager {
             'background': 'var(--bs-primary)',
             'border': 'none'
         })
-            botInvButton.title = 'Bot inventory';
+        botInvButton.title = 'Bot inventory';
 
         if(this.stnInventory === null){
             botInvButton.classList.add('unavailable');
@@ -258,7 +355,7 @@ class ListingManager {
 
                             if (sellListings.length > 1) this.otherSellers = sellListings.length;
                             const finalizedData = {
-                                sell: {keys: sellListings[0]?.keys?? 0, metal: sellListings[0]?.metal?? 0},
+                                sell: {keys: sellListings[0]?.keys?? 0, metal: sellListings[0]?.metal?? 0, usd: sellListings[0]?.usd ?? 0},
                                 buy: {keys: buyListings[0]?.keys?? 0, metal: buyListings[0]?.metal?? 0}
                             };
                             this.cache.addNewCacheElement($itemName, finalizedData, this.otherSellers);
@@ -351,7 +448,7 @@ class ListingsDataCache {
         const elementToAdd = {
             itemName,
             prices: {
-                sell: {keys: sell.keys, metal: sell.metal},
+                sell: {keys: sell.keys, metal: sell.metal, usd: sell.usd},
                 buy: {keys: buy.keys, metal: buy.metal}
             },
             timestamp,
@@ -393,7 +490,7 @@ class ListingsDataCache {
     }
 
 }
-
+new MarketplaceKeyPriceController();
 const cache = new ListingsDataCache();
 new ListingManager(cache)
 
