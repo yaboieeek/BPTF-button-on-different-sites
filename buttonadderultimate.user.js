@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.2
+// @version      2.2.1
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -131,8 +131,12 @@ class Listing {
             refContainer.innerText = '';
         } else if (usd !== 0) {
             keysContainer.innerText = `$${usd}`;
-            const convertedPrice = Math.floor(usd / GM_getValue('keyPrice', Config.defaultKeyPrice) * 100) / 100;
+            const convertedPrice = Math.floor(usd * 1.1 / GM_getValue('keyPrice', Config.defaultKeyPrice) * 100) / 100;
             refContainer.innerText = `~${convertedPrice} keys`;
+            refContainer.title =
+                `Key rate: $${GM_getValue('keyPrice', Config.defaultKeyPrice)} (before fees)\n` +
+                `Last updated: ${Math.floor(Date.now()/1000)}`
+
             keysContainer.style.color = '#55cc44'
         }
         priceContainer.append(keysContainer, refContainer);
@@ -327,7 +331,6 @@ class ListingManager {
         return new Promise((resolve, reject) => {
             const itemInCache = this.cache.lookForName($itemName);
             if (!itemInCache.failed) {
-                console.log(!itemInCache.failed);
                 const header = document.querySelector('.bptf-orders');
                 const timeleft = this.cache.convertTTLtoMinutes(itemInCache.timestamp);
                 this.otherSellers = itemInCache.otherSellersCount;
@@ -420,10 +423,9 @@ class ListingsDataCache {
     }
     lookForName($itemName) {
         const currentCache = GM_getValue('ListingsData', []);
-        const elementExists = currentCache.some(cacheElement => cacheElement.itemName === $itemName);
-        if (currentCache.lenght === 0 || !elementExists) return {failed: true};
-
-        const itemInCache = currentCache.find(({itemName}) => itemName === $itemName);
+        if (currentCache.length === 0) return {failed: true};
+        let itemInCache = currentCache.find(({itemName}) => itemName === $itemName);
+        if (!itemInCache) return {failed: true};
         return itemInCache;
     }
 
@@ -432,11 +434,12 @@ class ListingsDataCache {
         return {
             buy: {
                 keys: cacheElement.prices.buy.keys,
-                metal: cacheElement.prices.buy.metal
+                metal: cacheElement.prices.buy.metal,
             },
             sell: {
                 keys: cacheElement.prices.sell.keys,
-                metal: cacheElement.prices.sell.metal
+                metal: cacheElement.prices.sell.metal,
+                usd: cacheElement.prices.sell.usd
             }
         }
     }
