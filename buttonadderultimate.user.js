@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.3.1
+// @version      2.3.2
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -18,7 +18,7 @@
 
 class Config {
     static cache = {
-        timeToLiveInHours: 0.5 // 0.5 = 30 min and so on
+        timeToLiveInHours: 0 // 0.5 = 30 min and so on
     }
     static defaultKeyPrice = 1.8 //$ per key used for conversion
     static defaultGlobalKeyPriceInRef = 60 //ref per key used for conversion
@@ -235,7 +235,7 @@ class ListingManager {
     otherSellers = 0;
     buyOrderStability = 0;
 
-    invalid = false;
+    invalid = {invalid: false};
 
     constructor(cache) {
         ///we need these to use the price endpoint
@@ -422,10 +422,14 @@ class ListingManager {
                             };
 
                             const pricesInScrap = buyListings.map(price => BOCalc.toScrap(price, GM_getValue('globalKeyPriceInRef', Config.defaultKeyPriceInRef))).slice(0, Config.defaultBuyersStabilityCount);
-                            const BOStability = BOCalc.calculateStability(pricesInScrap);
+                            const BOStability = Math.floor(BOCalc.calculateStability(pricesInScrap) * 10) / 10;
+                            console.log(pricesInScrap);
 
-                            if (buyListings.length < Config.defaultBuyersStabilityCount) {
-                                this.invalid = true
+                            if (buyListings.length < Config.defaultBuyersStabilityCount || BOStability < 0) {
+                                this.invalid = {
+                                    invalid: true,
+                                    reason: BOStability < 0 ? `Invalid range. Check buyers.` : `Invalid data. There are less buyers, than ${Config.defaultBuyersStabilityCount}`
+                                }
                             }
 
                             this.buyOrderStability = BOStability;
@@ -477,6 +481,7 @@ class ListingManager {
 
         otherSellersContainer.innerText = `${finalSellers} seller${finalSellers > 1 || finalSellers === 0 ? 's' : ''} total`;
         switch (finalSellers) {
+            case 0:
             case 1: otherSellersContainer.style.color = '#9cff78'; break;
             case 2: otherSellersContainer.style.color = '#ffa04d'; break;
             default: otherSellersContainer.style.color = '#ff8080'; break;
@@ -505,9 +510,9 @@ class ListingManager {
             stabilityContainer.innerText += ' | Not stable!';
         }
 
-        if (this.invalid) {
+        if (this.invalid.invalid === true) {
             stabilityContainer.classList.add('invalid');
-            stabilityContainer.title = `Invalid data. There are less buyers, than ${Config.defaultBuyersStabilityCount}`
+            stabilityContainer.title = this.invalid.reason;
         }
         return stabilityContainer;
     }
@@ -546,7 +551,7 @@ class ListingsDataCache {
         }
     }
 
-    addNewCacheElement(itemName, {sell, buy}, otherSellersCount = 0, buyOrderStability = 0, invalid = false) {
+    addNewCacheElement(itemName, {sell, buy}, otherSellersCount = 0, buyOrderStability = 0, invalid = {invalid: false}) {
         const timestamp = this.#getCurrentTime();
         if (buy.keys === buy.metal === sell.keys === sell.metal) return;
 
@@ -624,7 +629,6 @@ class BOCalc {
         const med = prices.reduce((acc, price) => acc + price, 0) / prices.length;
 
         const relRange = ((max - min) / med) * 100;
-
         const invStability = 100 - Math.floor(relRange * 10) / 10
 
         return invStability;
