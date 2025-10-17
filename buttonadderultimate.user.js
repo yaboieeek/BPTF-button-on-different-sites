@@ -18,7 +18,7 @@
 
 class Config {
     static cache = {
-        timeToLiveInHours: 0 // 0.5 = 30 min and so on
+        timeToLiveInHours: 0.5 // 0.5 = 30 min and so on
     }
     static defaultKeyPrice = 1.8 //$ per key used for conversion
     static defaultGlobalKeyPriceInRef = 60 //ref per key used for conversion
