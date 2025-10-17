@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.2.1
+// @version      2.3
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -9,6 +9,7 @@
 // @downloadURL https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js
 // @updateURL https://github.com/yaboieeek/BPTF-button-on-different-sites/raw/refs/heads/main/buttonadderultimate.user.js
 // @connect backpack.tf
+// @connect pricedb.io
 // @grant GM_setValue
 // @grant GM_getValue
 // @grant GM_xmlhttpRequest
@@ -20,13 +21,18 @@ class Config {
         timeToLiveInHours: 0.5 // 0.5 = 30 min and so on
     }
     static defaultKeyPrice = 1.8 //$ per key used for conversion
+    static defaultGlobalKeyPriceInRef = 60 //ref per key used for conversion
     static defaultKeyPriceFetchInterval = 12 * 60 * 1000 // every 12 hours
+
+    static defaultBuyersStabilityCount = 3; // We will consider buyers stable based on this amount of buyorders
 }
 
-class MarketplaceKeyPriceController {
+class KeyPriceController {
     constructor() {
         this.keyPrice = GM_getValue('keyPrice', Config.defaultKeyPrice);
-        console.log(`Initialized key price @${this.keyPrice}`)
+        this.globalKeyPriceInRef = GM_getValue('globalKeyPriceInRef', Config.defaultGlobalKeyPriceInRef);
+
+        console.log(`Initialized key price @${this.keyPrice}\nIn ref: ${this.globalKeyPriceInRef}`)
         this.init();
     }
 
@@ -43,6 +49,15 @@ class MarketplaceKeyPriceController {
                 }
             }).catch(error => {
                 console.error('Failed to update key price:', error);
+            });
+
+            this.getKeyPriceInRef().then(newPrice => {
+                if (newPrice !== undefined) {
+                    this.globalKeyPriceInRef = newPrice;
+                    GM_setValue('globalKeyPriceInRef', newPrice);
+                }
+            }).catch(error => {
+                console.error('Failed to update key price in ref:', error);
             });
         }
 
@@ -114,7 +129,45 @@ class MarketplaceKeyPriceController {
         }
         return newPrice;
     }
+
+    async getKeyPriceInRef() {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: `https://pricedb.io/api/item/5021;6`,
+                responseType: 'json',
+                onload: (res) => {
+                    try {
+                        console.log('Making an API request to PriceDB for key price');
+                        const response = res.response;
+
+                        const keyPrice = response.buy.metal;
+
+                        if (keyPrice === null) {
+                            console.warn('Key price not found in response, using default');
+                            resolve(Config.defaultGlobalKeyPriceInRef);
+                            return;
+                        }
+                        resolve(keyPrice);
+                    } catch (error) {
+                        console.error('[ERROR] Failed to parse key price:', error);
+                        resolve(Config.defaultGlobalKeyPriceInRef);
+                    }
+                },
+                onerror: (err) => {
+                    console.error('[ERROR] Network error fetching key price:', err);
+                    resolve(Config.defaultGlobalKeyPriceInRef);
+                },
+                ontimeout: () => {
+                    console.error('[ERROR] Request timeout fetching key price');
+                    resolve(Config.defaultGlobalKeyPriceInRef);
+                }
+            });
+        });
+    }
 }
+
+
 class Listing {
 
     static createListing(prices, intent, stn = false) {
@@ -180,6 +233,8 @@ class ListingManager {
     stockButtons;
     pointers = []; /// we will create pointers to listing containers and append listings to them
     otherSellers = 0;
+    buyOrderStability = 0;
+
     constructor(cache) {
         ///we need these to use the price endpoint
         this.cache = cache;
@@ -334,6 +389,7 @@ class ListingManager {
                 const header = document.querySelector('.bptf-orders');
                 const timeleft = this.cache.convertTTLtoMinutes(itemInCache.timestamp);
                 this.otherSellers = itemInCache.otherSellersCount;
+                this.buyOrderStability = itemInCache.buyOrderStability;
                 header.innerText = `${header.innerText} 🔄 ${timeleft} minutes`;
                 header.title = `Cached data. Will expire in ${timeleft} minutes`;
                 resolve(this.cache.getPriceData(itemInCache));
@@ -356,12 +412,17 @@ class ListingManager {
                                 listings.filter(listing => (listing.intent === 'buy') && !(listing.item.attributes.some(attr => +attr.defindex > 1000))).map(listing => listing.currencies),
                             ];
 
-                            if (sellListings.length > 1) this.otherSellers = sellListings.length;
+                            if (sellListings.length > 0) this.otherSellers = sellListings.length;
                             const finalizedData = {
                                 sell: {keys: sellListings[0]?.keys?? 0, metal: sellListings[0]?.metal?? 0, usd: sellListings[0]?.usd ?? 0},
                                 buy: {keys: buyListings[0]?.keys?? 0, metal: buyListings[0]?.metal?? 0}
                             };
-                            this.cache.addNewCacheElement($itemName, finalizedData, this.otherSellers);
+                            const pricesInScrap = buyListings.map(price => BOCalc.toScrap(price, GM_getValue('globalKeyPriceInRef', Config.defaultKeyPriceInRef))).slice(0, Config.defaultBuyersStabilityCount);
+                            const BOStability = BOCalc.calculateStability(pricesInScrap);
+
+                            this.buyOrderStability = BOStability;
+                            this.cache.addNewCacheElement($itemName, finalizedData, this.otherSellers, BOStability);
+
                             resolve(finalizedData);
                         } catch (msg) {
                             console.log('[ERROR] ' + msg);
@@ -379,8 +440,12 @@ class ListingManager {
             const prices = await this.getBackpackListings();
             [...this.pointers[1].children].forEach(child => child.classList.remove('listing-loading'));
             this._createListing(this.pointers[1], prices);
+            const dataContainer = document.createElement('div');
+            dataContainer.className = 'data-container';
+            this.pointers[0].parentElement.parentElement.append(dataContainer);
 
-            (this.otherSellers > 1) && this.pointers[1].parentElement.parentElement.append(this._createOtherSellersInfoElement());
+            dataContainer.append(this._createOtherSellersInfoElement());
+            dataContainer.append(this._createBuyOrderStabilityInfoElement());
         } catch (e) {
             [...this.pointers[1].children].forEach(child => child.classList.add('listing-failed'));
             document.querySelector('.bptf-orders').innerText = 'Backpack.tf orders failed to load. Try again later';
@@ -410,6 +475,29 @@ class ListingManager {
 
         }
         return otherSellersContainer;
+    }
+
+    _createBuyOrderStabilityInfoElement() {
+        const stabilityContainer = document.createElement('div');
+        stabilityContainer.className = 'listings stability';
+        if (typeof this.buyOrderStability === 'undefined') return ''; /// we skip if broken value
+
+        stabilityContainer.innerText = `${this.buyOrderStability}%`;
+        stabilityContainer.title = `Based on ${Config.defaultBuyersStabilityCount} buy orders.`
+
+
+        if(this.buyOrderStability > 90) {
+            stabilityContainer.style.color = '#9cff78';
+            stabilityContainer.innerText += ' | Stable';
+        } else if (this.buyOrderStability > 50 && this.buyOrderStability < 90) {
+            stabilityContainer.style.color = '#ffa04d'
+            stabilityContainer.innerText += ' | Check buyers';
+        } else {
+            stabilityContainer.style.color = '#ff8080'
+            stabilityContainer.innerText += ' | Not stable!';
+        }
+
+        return stabilityContainer;
     }
 }
 
@@ -444,7 +532,7 @@ class ListingsDataCache {
         }
     }
 
-    addNewCacheElement(itemName, {sell, buy}, otherSellersCount = 0) {
+    addNewCacheElement(itemName, {sell, buy}, otherSellersCount = 0, buyOrderStability = 0) {
         const timestamp = this.#getCurrentTime();
         if (buy.keys === buy.metal === sell.keys === sell.metal) return;
 
@@ -455,7 +543,8 @@ class ListingsDataCache {
                 buy: {keys: buy.keys, metal: buy.metal}
             },
             timestamp,
-            otherSellersCount
+            otherSellersCount,
+            buyOrderStability
         }
 
         const currentCache = GM_getValue('ListingsData', []);
@@ -493,7 +582,47 @@ class ListingsDataCache {
     }
 
 }
-new MarketplaceKeyPriceController();
+
+class BOCalc {
+    static toScrap({keys = 0, metal = 0 }, globalKeyPrice = Config.defaultGlobalKeyPriceInRef,) {
+        const scrapOfMetal = (metal % 1).toFixed(2) / 0.11;
+
+        const refToScrap = (ref) => (ref - (ref % 1).toFixed(2)) * 9;
+
+        const metalTotal = refToScrap(metal);
+        const keyToScrap = keys * refToScrap(globalKeyPrice);
+
+        return scrapOfMetal + metalTotal + keyToScrap;
+    }
+
+    static calculateStability(prices) {
+        if (prices.length === 0) {
+            return console.log(`0 prices provided. We're stable at 0 buyers`);
+        }
+
+        if (!Array.isArray(prices)) {
+            throw new Error(`Please provide a valid price array`);
+        }
+
+        const max = Math.max(...prices);
+        const min = Math.min(...prices);
+
+        const med = prices.reduce((acc, price) => acc + price, 0) / prices.length;
+
+        const relRange = ((max - min) / med) * 100;
+
+        const invStability = 100 - Math.floor(relRange * 10) / 10
+
+        return invStability;
+    }
+}
+
+class BOController {
+    stability = 0;
+}
+
+
+new KeyPriceController();
 const cache = new ListingsDataCache();
 new ListingManager(cache)
 
@@ -546,7 +675,7 @@ GM_addStyle(`
         transition: height 1s ease, opacity 0.9s ease;
     }
 
-    .other-sellers {
+    .other-sellers, .stability {
         height: 2em;
           width: calc(25% - 5px);
           text-align: center;
@@ -655,5 +784,10 @@ GM_addStyle(`
     }
     .stock:not(.unavailable):has(.fa-steam-symbol):hover {
         filter: brightness(0.9)
+    }
+
+    .data-container {
+        display: flex;
+        gap: 1%
     }
     `)
