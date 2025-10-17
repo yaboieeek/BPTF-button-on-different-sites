@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         bptf button on stn!
-// @version      2.3
+// @version      2.3.1
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @description  makes stn a lil better
 // @author       eeek
@@ -235,6 +235,8 @@ class ListingManager {
     otherSellers = 0;
     buyOrderStability = 0;
 
+    invalid = false;
+
     constructor(cache) {
         ///we need these to use the price endpoint
         this.cache = cache;
@@ -390,6 +392,7 @@ class ListingManager {
                 const timeleft = this.cache.convertTTLtoMinutes(itemInCache.timestamp);
                 this.otherSellers = itemInCache.otherSellersCount;
                 this.buyOrderStability = itemInCache.buyOrderStability;
+                this.invalid = itemInCache.invalid;
                 header.innerText = `${header.innerText} 🔄 ${timeleft} minutes`;
                 header.title = `Cached data. Will expire in ${timeleft} minutes`;
                 resolve(this.cache.getPriceData(itemInCache));
@@ -417,11 +420,16 @@ class ListingManager {
                                 sell: {keys: sellListings[0]?.keys?? 0, metal: sellListings[0]?.metal?? 0, usd: sellListings[0]?.usd ?? 0},
                                 buy: {keys: buyListings[0]?.keys?? 0, metal: buyListings[0]?.metal?? 0}
                             };
+
                             const pricesInScrap = buyListings.map(price => BOCalc.toScrap(price, GM_getValue('globalKeyPriceInRef', Config.defaultKeyPriceInRef))).slice(0, Config.defaultBuyersStabilityCount);
                             const BOStability = BOCalc.calculateStability(pricesInScrap);
 
+                            if (buyListings.length < Config.defaultBuyersStabilityCount) {
+                                this.invalid = true
+                            }
+
                             this.buyOrderStability = BOStability;
-                            this.cache.addNewCacheElement($itemName, finalizedData, this.otherSellers, BOStability);
+                            this.cache.addNewCacheElement($itemName, finalizedData, this.otherSellers, BOStability, this.invalid);
 
                             resolve(finalizedData);
                         } catch (msg) {
@@ -467,7 +475,7 @@ class ListingManager {
         otherSellersContainer.className = 'listings other-sellers';
         const finalSellers = this.otherSellers;
 
-        otherSellersContainer.innerText = `${finalSellers} seller${finalSellers > 1 ? 's' : ''} total`;
+        otherSellersContainer.innerText = `${finalSellers} seller${finalSellers > 1 || finalSellers === 0 ? 's' : ''} total`;
         switch (finalSellers) {
             case 1: otherSellersContainer.style.color = '#9cff78'; break;
             case 2: otherSellersContainer.style.color = '#ffa04d'; break;
@@ -497,8 +505,14 @@ class ListingManager {
             stabilityContainer.innerText += ' | Not stable!';
         }
 
+        if (this.invalid) {
+            stabilityContainer.classList.add('invalid');
+            stabilityContainer.title = `Invalid data. There are less buyers, than ${Config.defaultBuyersStabilityCount}`
+        }
         return stabilityContainer;
     }
+
+
 }
 
 // sometimes i feel like checking twice and hitting the limit again and again is quite annoying
@@ -532,7 +546,7 @@ class ListingsDataCache {
         }
     }
 
-    addNewCacheElement(itemName, {sell, buy}, otherSellersCount = 0, buyOrderStability = 0) {
+    addNewCacheElement(itemName, {sell, buy}, otherSellersCount = 0, buyOrderStability = 0, invalid = false) {
         const timestamp = this.#getCurrentTime();
         if (buy.keys === buy.metal === sell.keys === sell.metal) return;
 
@@ -544,7 +558,8 @@ class ListingsDataCache {
             },
             timestamp,
             otherSellersCount,
-            buyOrderStability
+            buyOrderStability,
+            invalid
         }
 
         const currentCache = GM_getValue('ListingsData', []);
@@ -599,7 +614,6 @@ class BOCalc {
         if (prices.length === 0) {
             return console.log(`0 prices provided. We're stable at 0 buyers`);
         }
-
         if (!Array.isArray(prices)) {
             throw new Error(`Please provide a valid price array`);
         }
@@ -789,5 +803,9 @@ GM_addStyle(`
     .data-container {
         display: flex;
         gap: 1%
+    }
+
+    .invalid {
+        filter: grayscale(1) brightness(0.8)
     }
     `)
