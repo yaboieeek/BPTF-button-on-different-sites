@@ -4,7 +4,7 @@
 // @version      7.7.7
 // @description  MIGRATEEEEEE
 // @author       eeek
-// @match        https://scrap.tf/auctions*
+// @match        https://stntrading.eu/*
 // ==/UserScript==
 
 /// SCRIPT URLS ARE OUTDATED!
