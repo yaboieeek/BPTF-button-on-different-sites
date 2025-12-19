@@ -2,7 +2,7 @@
 // @name         ScrapAuction+
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
 // @version      7.7.7
-// @description  it adds cool buttons
+// @description  MIGRATEEEEE TO https://github.com/yaboieeek/.tf-plus
 // @author       eeek
 // @match        https://scrap.tf/auctions*
 // ==/UserScript==
