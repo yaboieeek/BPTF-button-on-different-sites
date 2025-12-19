@@ -12,4 +12,4 @@
 /// REINSTALL IT FROM HERE TO STAY UPDATED: 
 /// https://github.com/yaboieeek/.tf-plus
 
-window.open('https://github.com/yaboieeek/.tf-plus', '_blank')
+alert('Please reinstall the script from https://github.com/yaboieeek/.tf-plus');
