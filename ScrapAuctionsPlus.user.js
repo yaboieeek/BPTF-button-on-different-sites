@@ -1,0 +1,15 @@
+// ==UserScript==
+// @name         ScrapAuction+
+// @namespace    https://steamcommunity.com/profiles/76561198967088046
+// @version      7.7.7
+// @description  it adds cool buttons
+// @author       eeek
+// @match        https://scrap.tf/auctions*
+// ==/UserScript==
+
+/// SCRIPT URLS ARE OUTDATED!
+/// SCRIPT REPOSITORY/URLS/EVERYTHING MIGRATED 
+/// REINSTALL IT FROM HERE TO STAY UPDATED: 
+/// https://github.com/yaboieeek/.tf-plus
+
+window.open('https://github.com/yaboieeek/.tf-plus', '_blank')
