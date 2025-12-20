@@ -12,4 +12,4 @@
 /// REINSTALL IT FROM HERE TO STAY UPDATED: 
 /// https://github.com/yaboieeek/.tf-plus
 
-alert('scrap-auction+ Script repository link was changed. To use the script please reinstall it from https://github.com/yaboieeek/.tf-plus');
+alert('scrap-auction+ Script repository link was changed. To use the script please reinstall it from https://github.com/yaboieeek/.tf-plus\nMake sure to remove this file from tampermonkey since functionality is moved to another one');
