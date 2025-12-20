@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bptf button on stn!
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
-// @version      7.7.7
+// @version      8.8.8
 // @description  MIGRATEEEEEE TO https://github.com/yaboieeek/.tf-plus
 // @author       eeek
 // @match        https://stntrading.eu/*
@@ -12,4 +12,4 @@
 /// REINSTALL IT FROM HERE TO STAY UPDATED: 
 /// https://github.com/yaboieeek/.tf-plus
 
-alert('Please reinstall the script from https://github.com/yaboieeek/.tf-plus');
+alert('bptf-button-on-stn! Script repository link was changed. To use the script please reinstall it from https://github.com/yaboieeek/.tf-plus');
