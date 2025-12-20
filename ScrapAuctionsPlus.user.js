@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ScrapAuction+
 // @namespace    https://steamcommunity.com/profiles/76561198967088046
-// @version      7.7.7
+// @version      8.8.8
 // @description  MIGRATEEEEE TO https://github.com/yaboieeek/.tf-plus
 // @author       eeek
 // @match        https://scrap.tf/auctions*
