@@ -12,4 +12,4 @@
 /// REINSTALL IT FROM HERE TO STAY UPDATED: 
 /// https://github.com/yaboieeek/.tf-plus
 
-alert('bptf-button-on-stn! Script repository link was changed. To use the script please reinstall it from https://github.com/yaboieeek/.tf-plus');
+alert('bptf-button-on-stn! Script repository link was changed. To use the script please reinstall it from https://github.com/yaboieeek/.tf-plus\nMake sure to remove this file since functionality was moved to another one');
