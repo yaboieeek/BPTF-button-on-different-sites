@@ -12,4 +12,4 @@
 /// REINSTALL IT FROM HERE TO STAY UPDATED: 
 /// https://github.com/yaboieeek/.tf-plus
 
-alert('Please reinstall the script from https://github.com/yaboieeek/.tf-plus');
+alert('bptf-buttons-on-stn! Script repository link was changed. To use the script please reinstall it from https://github.com/yaboieeek/.tf-plus');
